@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://weapons/resources/weapon_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Type 56"
+rounds_per_minute = 650.0
+magazine_size = 30
+reload_time = 3.0
+damage = 45.0
+muzzle_velocity = 715.0
+bullet_mass_g = 7.9
+penetration = 25.0
+recoil_vertical = 1.6
+recoil_horizontal = 0.8
+sway = 1.2
+hip_spread_deg = 5.0
+supported_spread_multiplier = 0.4
+uses_belt = false
+has_bipod = false
+heat_per_shot = 0.0
+cooling_per_second = 0.0
+barrel_change_time = 0.0
+jam_chance_when_hot = 0.0

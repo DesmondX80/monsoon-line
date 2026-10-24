@@ -1,0 +1,108 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://ai/test/ai_sandbox.gd" id="1"]
+[ext_resource type="PackedScene" path="res://ai/enemy/enemy.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://player/player.tscn" id="3"]
+
+[sub_resource type="NavigationMesh" id="navmesh"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 1
+agent_radius = 0.5
+agent_height = 1.5
+agent_max_climb = 0.25
+
+[sub_resource type="BoxShape3D" id="ground_shape"]
+size = Vector3(80, 1, 80)
+
+[sub_resource type="BoxMesh" id="ground_mesh"]
+size = Vector3(80, 1, 80)
+
+[sub_resource type="BoxShape3D" id="wall_shape"]
+size = Vector3(6, 2, 1)
+
+[sub_resource type="BoxMesh" id="wall_mesh"]
+size = Vector3(6, 2, 1)
+
+[sub_resource type="BoxShape3D" id="log_shape"]
+size = Vector3(1, 0.8, 4)
+
+[sub_resource type="BoxMesh" id="log_mesh"]
+size = Vector3(1, 0.8, 4)
+
+[sub_resource type="BoxShape3D" id="bush_shape"]
+size = Vector3(4, 1.8, 2)
+
+[sub_resource type="StandardMaterial3D" id="bush_mat"]
+transparency = 1
+albedo_color = Color(0.15, 0.4, 0.12, 0.6)
+
+[sub_resource type="BoxMesh" id="bush_mesh"]
+material = SubResource("bush_mat")
+size = Vector3(4, 1.8, 2)
+
+[node name="AISandbox" type="Node3D" node_paths=PackedStringArray("nav_region")]
+script = ExtResource("1")
+nav_region = NodePath("NavigationRegion3D")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 0, 20, 0)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("navmesh")
+
+[node name="Ground" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Ground"]
+shape = SubResource("ground_shape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Ground"]
+mesh = SubResource("ground_mesh")
+
+[node name="Wall1" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Wall1"]
+shape = SubResource("wall_shape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Wall1"]
+mesh = SubResource("wall_mesh")
+
+[node name="Wall2" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8, 1, -14)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Wall2"]
+shape = SubResource("wall_shape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Wall2"]
+mesh = SubResource("wall_mesh")
+
+[node name="Log" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.4, -4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Log"]
+shape = SubResource("log_shape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Log"]
+mesh = SubResource("log_mesh")
+
+[node name="Bush" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.9, 3)
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bush"]
+shape = SubResource("bush_shape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bush"]
+mesh = SubResource("bush_mesh")
+
+[node name="Player" parent="." instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 5)
+
+[node name="Enemy1" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -20)
+
+[node name="Enemy2" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -24)
