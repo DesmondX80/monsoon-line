@@ -31,12 +31,14 @@ func _process(delta: float) -> void:
 		_apply(bleed_rate * bleeding_wounds * delta)
 
 
-func take_hit(damage: float, body_part: StringName) -> void:
+## opens_wound = false: tylppä vamma (esim. kova laskeutuminen), ei vuotavaa haavaa.
+func take_hit(damage: float, body_part: StringName, opens_wound: bool = true) -> void:
 	# Kuollutta toimijaa ei voi enää haavoittaa: ei uusia haavoja eikä signaaleja.
 	if is_dead():
 		return
 	_apply(damage * DAMAGE_MULTIPLIER.get(body_part, 1.0))
-	bleeding_wounds += 1
+	if opens_wound:
+		bleeding_wounds += 1
 	if body_part != &"torso" and body_part != &"head" and body_part not in disabled_parts:
 		disabled_parts.append(body_part)
 		limb_disabled.emit(body_part)
