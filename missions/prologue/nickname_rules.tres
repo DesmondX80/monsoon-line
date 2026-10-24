@@ -1,0 +1,170 @@
+[gd_resource type="Resource" script_class="NicknameRuleSet" load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://missions/prologue/nickname_rule.gd" id="1_r5ink"]
+[ext_resource type="Script" path="res://missions/prologue/nickname_condition.gd" id="2_co200"]
+[ext_resource type="Script" path="res://missions/prologue/nickname_rule_set.gd" id="3_k0ice"]
+
+[sub_resource type="Resource" id="Resource_qpjgx"]
+script = ExtResource("1_r5ink")
+id = &"humpty"
+nickname = "Humpty"
+priority = 70
+station_id = &"jump_tower"
+key = &"landing"
+comparison = 4
+threshold = 0.0
+match_value = &"injured"
+extra_conditions = Array[ExtResource("2_co200")]([])
+
+[sub_resource type="Resource" id="Resource_odxdp"]
+script = ExtResource("1_r5ink")
+id = &"hot_barrel"
+nickname = "Hot Barrel"
+priority = 65
+station_id = &"mg_range"
+key = &"overheated"
+comparison = 4
+threshold = 1.0
+match_value = &""
+extra_conditions = Array[ExtResource("2_co200")]([])
+
+[sub_resource type="Resource" id="Resource_8qkg8"]
+script = ExtResource("1_r5ink")
+id = &"stumbles"
+nickname = "Stumbles"
+priority = 60
+station_id = &"obstacle_course"
+key = &"falls"
+comparison = 0
+threshold = 3.0
+match_value = &""
+extra_conditions = Array[ExtResource("2_co200")]([])
+
+[sub_resource type="Resource" id="Resource_6q6lo"]
+script = ExtResource("1_r5ink")
+id = &"barbwire"
+nickname = "Barbwire"
+priority = 55
+station_id = &"obstacle_course"
+key = &"wire_touches"
+comparison = 0
+threshold = 3.0
+match_value = &""
+extra_conditions = Array[ExtResource("2_co200")]([])
+
+[sub_resource type="Resource" id="Resource_mq464"]
+script = ExtResource("1_r5ink")
+id = &"lawn_dart"
+nickname = "Lawn Dart"
+priority = 50
+station_id = &"jump_tower"
+key = &"landing"
+comparison = 4
+threshold = 0.0
+match_value = &"hard"
+extra_conditions = Array[ExtResource("2_co200")]([])
+
+[sub_resource type="Resource" id="Resource_r64lj"]
+script = ExtResource("1_r5ink")
+id = &"sandbag"
+nickname = "Sandbag"
+priority = 40
+station_id = &"obstacle_course"
+key = &"time_s"
+comparison = 0
+threshold = 150.0
+match_value = &""
+extra_conditions = Array[ExtResource("2_co200")]([])
+
+[sub_resource type="Resource" id="Resource_bv06n"]
+script = ExtResource("2_co200")
+station_id = &"mg_range"
+key = &"shots"
+comparison = 0
+threshold = 50.0
+match_value = &""
+
+[sub_resource type="Resource" id="Resource_j3eyo"]
+script = ExtResource("1_r5ink")
+id = &"garden_hose"
+nickname = "Garden Hose"
+priority = 35
+station_id = &"mg_range"
+key = &"hit_ratio"
+comparison = 3
+threshold = 0.2
+match_value = &""
+extra_conditions = Array[ExtResource("2_co200")]([SubResource("Resource_bv06n")])
+
+[sub_resource type="Resource" id="Resource_gel1u"]
+script = ExtResource("2_co200")
+station_id = &"mg_range"
+key = &"shots"
+comparison = 0
+threshold = 20.0
+match_value = &""
+
+[sub_resource type="Resource" id="Resource_r2t3d"]
+script = ExtResource("1_r5ink")
+id = &"bullseye"
+nickname = "Bullseye"
+priority = 30
+station_id = &"mg_range"
+key = &"hit_ratio"
+comparison = 0
+threshold = 0.7
+match_value = &""
+extra_conditions = Array[ExtResource("2_co200")]([SubResource("Resource_gel1u")])
+
+[sub_resource type="Resource" id="Resource_atvda"]
+script = ExtResource("2_co200")
+station_id = &"mg_range"
+key = &"belt_reloaded"
+comparison = 4
+threshold = 1.0
+match_value = &""
+
+[sub_resource type="Resource" id="Resource_tcsnp"]
+script = ExtResource("2_co200")
+station_id = &"mg_range"
+key = &"barrel_changed"
+comparison = 4
+threshold = 1.0
+match_value = &""
+
+[sub_resource type="Resource" id="Resource_0kdv4"]
+script = ExtResource("1_r5ink")
+id = &"professor"
+nickname = "Professor"
+priority = 25
+station_id = &"mg_range"
+key = &"bipod_used"
+comparison = 4
+threshold = 1.0
+match_value = &""
+extra_conditions = Array[ExtResource("2_co200")]([SubResource("Resource_atvda"), SubResource("Resource_tcsnp")])
+
+[sub_resource type="Resource" id="Resource_lkgn6"]
+script = ExtResource("2_co200")
+station_id = &"obstacle_course"
+key = &"falls"
+comparison = 4
+threshold = 0.0
+match_value = &""
+
+[sub_resource type="Resource" id="Resource_psf25"]
+script = ExtResource("1_r5ink")
+id = &"jackrabbit"
+nickname = "Jackrabbit"
+priority = 20
+station_id = &"obstacle_course"
+key = &"time_s"
+comparison = 2
+threshold = 60.0
+match_value = &""
+extra_conditions = Array[ExtResource("2_co200")]([SubResource("Resource_lkgn6")])
+
+[resource]
+script = ExtResource("3_k0ice")
+default_nickname = "Cherry"
+rules = Array[ExtResource("1_r5ink")]([SubResource("Resource_qpjgx"), SubResource("Resource_odxdp"), SubResource("Resource_8qkg8"), SubResource("Resource_6q6lo"), SubResource("Resource_mq464"), SubResource("Resource_r64lj"), SubResource("Resource_j3eyo"), SubResource("Resource_r2t3d"), SubResource("Resource_0kdv4"), SubResource("Resource_psf25")])

@@ -1,0 +1,136 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://ai/npc/drill_sergeant.gd" id="1"]
+[ext_resource type="Script" path="res://core/state_machine/state_machine.gd" id="2"]
+[ext_resource type="Script" path="res://ai/npc/states/idle_state.gd" id="3"]
+[ext_resource type="Script" path="res://ai/npc/states/walk_state.gd" id="4"]
+[ext_resource type="Script" path="res://ai/npc/states/talk_state.gd" id="5"]
+
+[sub_resource type="CapsuleShape3D" id="capsule"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="khaki"]
+albedo_color = Color(0.71, 0.63, 0.45, 1)
+
+[sub_resource type="StandardMaterial3D" id="khaki_dark"]
+albedo_color = Color(0.58, 0.51, 0.36, 1)
+
+[sub_resource type="StandardMaterial3D" id="skin"]
+albedo_color = Color(0.78, 0.6, 0.48, 1)
+
+[sub_resource type="StandardMaterial3D" id="hat"]
+albedo_color = Color(0.33, 0.27, 0.17, 1)
+
+[sub_resource type="StandardMaterial3D" id="boots"]
+albedo_color = Color(0.08, 0.06, 0.05, 1)
+
+[sub_resource type="BoxMesh" id="torso_mesh"]
+material = SubResource("khaki")
+size = Vector3(0.46, 0.62, 0.26)
+
+[sub_resource type="BoxMesh" id="leg_mesh"]
+material = SubResource("khaki_dark")
+size = Vector3(0.16, 0.8, 0.16)
+
+[sub_resource type="BoxMesh" id="boot_mesh"]
+material = SubResource("boots")
+size = Vector3(0.17, 0.12, 0.26)
+
+[sub_resource type="BoxMesh" id="arm_mesh"]
+material = SubResource("khaki")
+size = Vector3(0.12, 0.62, 0.12)
+
+[sub_resource type="SphereMesh" id="head_mesh"]
+material = SubResource("skin")
+radius = 0.12
+height = 0.25
+
+[sub_resource type="CylinderMesh" id="brim_mesh"]
+material = SubResource("hat")
+top_radius = 0.24
+bottom_radius = 0.24
+height = 0.015
+
+[sub_resource type="CylinderMesh" id="crown_mesh"]
+material = SubResource("hat")
+top_radius = 0.025
+bottom_radius = 0.12
+height = 0.13
+
+[node name="DrillSergeant" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("capsule")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.6
+target_desired_distance = 0.6
+radius = 0.4
+height = 1.8
+
+[node name="Body" type="Node3D" parent="."]
+
+[node name="LegL" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 0.46, 0)
+mesh = SubResource("leg_mesh")
+
+[node name="LegR" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 0.46, 0)
+mesh = SubResource("leg_mesh")
+
+[node name="BootL" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 0.06, -0.04)
+mesh = SubResource("boot_mesh")
+
+[node name="BootR" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 0.06, -0.04)
+mesh = SubResource("boot_mesh")
+
+[node name="Torso" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.17, 0)
+mesh = SubResource("torso_mesh")
+
+[node name="ArmL" type="Node3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 1.44, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Body/ArmL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+mesh = SubResource("arm_mesh")
+
+[node name="ArmR" type="Node3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.44, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Body/ArmR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+mesh = SubResource("arm_mesh")
+
+[node name="Head" type="Node3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Body/Head"]
+mesh = SubResource("head_mesh")
+
+[node name="HatBrim" type="MeshInstance3D" parent="Body/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
+mesh = SubResource("brim_mesh")
+
+[node name="HatCrown" type="MeshInstance3D" parent="Body/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("crown_mesh")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("3")
+
+[node name="Walk" type="Node" parent="StateMachine"]
+script = ExtResource("4")
+
+[node name="Talk" type="Node" parent="StateMachine"]
+script = ExtResource("5")

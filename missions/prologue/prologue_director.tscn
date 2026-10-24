@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://missions/prologue/prologue_director.gd" id="1"]
+[ext_resource type="Resource" path="res://missions/prologue/nickname_rules.tres" id="2"]
+[ext_resource type="PackedScene" path="res://ai/npc/drill_sergeant.tscn" id="3"]
+
+[node name="PrologueDirector" type="Node"]
+script = ExtResource("1")
+nickname_rules = ExtResource("2")
+
+[node name="Tibbs" parent="." instance=ExtResource("3")]
