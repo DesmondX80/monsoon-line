@@ -1,18 +1,24 @@
 name: Release
 
 # Rakentaa Windows-.exe:n ja liittää sen GitHub-julkaisuun, kun
-# - julkaisu julkaistaan GitHubin verkkosivulla (Releases → Draft a new release), tai
-# - pushataan versiotagi (esim. v0.1.0) ilman julkaisua.
+# - julkaisu julkaistaan GitHubin verkkosivulla (Releases → Draft a new release),
+# - pushataan versiotagi (esim. v0.1.0), tai
+# - työnkulku käynnistetään käsin (Actions → Release → Run workflow) ja annetaan versio:
+#   silloin työnkulku luo tagin ja julkaisun itse nykyisestä main-haarasta.
 on:
   release:
     types: [published]
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Versio, esim. v0.1.0 (tyhjä = vain rakennus ilman julkaisua)"
+        required: false
+        default: ""
 
-# Sama tagi ajetaan vain kerran, vaikka sekä tagin push että julkaisu laukaisisivat työnkulun.
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.version || github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -23,6 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GODOT_VERSION: 4.4.1
+      VERSION: ${{ inputs.version || github.ref_name }}
+      PUBLISH: ${{ inputs.version != '' || startsWith(github.ref, 'refs/tags/') }}
     steps:
       - uses: actions/checkout@v4
 
@@ -55,15 +63,27 @@ jobs:
           mkdir -p build/windows
           ~/godot/godot --headless --import --quit || true
           ~/godot/godot --headless --export-release "Windows Desktop" build/windows/MonsoonLine.exe
-          cd build/windows && zip -q ../MonsoonLine-windows-${GITHUB_REF_NAME}.zip *
+          test -s build/windows/MonsoonLine.exe
+          cd build/windows && zip -q ../MonsoonLine-windows-${VERSION}.zip MonsoonLine.exe
 
       - uses: actions/upload-artifact@v4
         with:
           name: MonsoonLine-windows
           path: build/MonsoonLine-windows-*.zip
 
-      - name: Attach to GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Release notes from CHANGELOG
+        if: env.PUBLISH == 'true'
+        run: |
+          V="${VERSION#v}"
+          awk -v v="$V" '$0 ~ "^## "v" " {p=1; next} /^## / {p=0} p' CHANGELOG.md > build/notes.md
+          [ -s build/notes.md ] || echo "Monsoon Line ${VERSION}" > build/notes.md
+
+      - name: Create or update GitHub release
+        if: env.PUBLISH == 'true'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.VERSION }}
+          target_commitish: ${{ github.sha }}
+          name: Monsoon Line ${{ env.VERSION }}
+          body_path: build/notes.md
           files: build/MonsoonLine-windows-*.zip
