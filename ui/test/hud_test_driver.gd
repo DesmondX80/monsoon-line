@@ -72,9 +72,55 @@ func _process(_delta: float) -> void:
 				stub.queue_free()
 		80:
 			AudioDirector.set("_quiet_left", 0.0)
+			# M2-06: otsikkokortti, ohje, lempinimi ja hyppymestari.
+			_check(FadeLayer.find(get_tree()) != null, "HUDin FadeLayer löytyy ryhmästä fade_layer")
+			EventBus.title_card.emit("Fort Benning, Georgia", "Laskuvarjokoulu – kesä 1966")
+			EventBus.objective_prompt.emit("Ilmoittaudu kersantti Tibbsille", "Report to Sergeant Tibbs")
+			GameState.player_nickname = "Stumbles"
+			EventBus.nickname_assigned.emit("Stumbles")
+			EventBus.jumpmaster_command.emit(&"hook_up")
+			EventBus.squad_callout.emit(null, &"jumpmaster_hook_up")
+			EventBus.squad_callout.emit(null, &"tibbs_nickname")
+		90:
+			_check(hud.is_title_card_visible(), "otsikkokortti näkyy")
+			var title: Label = hud.get_node(^"TitleCard/Band/VBox/Title") as Label
+			_check(title.text == "FORT BENNING, GEORGIA", "otsikko isoin kirjaimin")
+			_check((hud.get_node(^"TitleCard/Band/VBox/Subtitle") as Label).text.contains("1966"), "alaotsikko asetettu")
+			_check(hud.get_objective_text() == "Ilmoittaudu kersantti Tibbsille", "ohje näkyy suomeksi")
+			_check(hud.get_nickname_card_text() == "Lempinimesi: STUMBLES", "lempinimikortti näkyy")
+			var subs: RichTextLabel = hud.get_node(^"Subtitles") as RichTextLabel
+			_check(subs.text.contains("Hyppymestari") and subs.text.contains("KOUKUT"), "hyppymestarin komento tekstityksenä")
+			_check(subs.text.contains("Stumbles") and not subs.text.contains("{nickname}"), "lempinimi korvautuu tekstityksessä")
+			EventBus.objective_prompt.emit("", "")
+		95:
+			_check(hud.get_objective_text().is_empty(), "tyhjä ohje piilottaa")
+			_check(not (hud.get_node(^"Objective") as Control).visible, "ohjepaneeli piilossa")
+			_check(AudioDirector.get_ambience_profile() == &"jungle", "test_range → viidakkoprofiili")
+			AudioDirector.set_ambience_profile(&"aircraft")
+			var jumper: Node3D = Node3D.new()
+			jumper.name = "Jumper"
+			jumper.add_to_group(&"player")
+			get_parent().add_child(jumper)
+			EventBus.jump_started.emit(jumper)
+		110:
+			_check(AudioDirector.is_freefall_wind_active(), "tuuli soi vapaapudotuksessa")
+			_check(AudioDirector.get_playing_ambience_layer_names().has("EngineCabin"), "C-130-jylinä soi")
+			var jumper: Node3D = get_parent().get_node_or_null(^"Jumper") as Node3D
+			EventBus.chute_opened.emit(jumper)
+			EventBus.landed.emit(jumper, &"injured")
+			jumper.queue_free()
 		150:
 			_check(AudioDirector.wildlife_level > 0.0, "ambienssi palaa hiljaisuuden jälkeen")
-			print("HUD_TEST: valmis")
+			_check(not AudioDirector.is_freefall_wind_active(), "tuuli loppui kuvun auetessa")
+			AudioDirector.set_ambience_profile(&"")
+		280:
+			# Headless-ajossa 300 ruutua on vain noin 2,5 s, joten täysi 4 s:n kortti on yhä näkyvissä.
+			_check(FadeLayer.find(get_tree()).get_opacity() < 0.05, "taso on häivyttynyt näkyviin")
+			var total: float = Hud.TITLE_FADE_IN + Hud.TITLE_HOLD + Hud.TITLE_FADE_OUT
+			_check(total >= 3.5 and total <= 4.5, "otsikkokortin kesto noin 4 s (%.1f s)" % total)
+			hud.show_title_card("", "")
+			_check(not hud.is_title_card_visible(), "tyhjä otsikkokortti piilottaa")
+			print("HUD_TEST: valmis (%.2f s)" % (Time.get_ticks_msec() / 1000.0))
 
 
 func _toggle_f3() -> void:

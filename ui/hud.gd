@@ -6,7 +6,10 @@ extends CanvasLayer
 ## - sykkivä punainen reuna verenvuodosta
 ## - kuumuusväreily, kun MachineGun.heat > 0,6
 ## - häivyttyvät vihjeet: nauha tyhjä, piippu ylikuumeni, ase jumissa
-## - repliikkien tekstitykset (EventBus.squad_callout, M1-16)
+## - repliikkien tekstitykset (EventBus.squad_callout, M1-16); myös hyppymestarin komennot
+## - M2-06: tehtäväohje (EventBus.objective_prompt, tyhjä piilottaa), otsikkokortti
+##   (EventBus.title_card, konekirjoitusefekti ja häivytys noin 4 s), lempinimikortti
+##   (EventBus.nickname_assigned) ja FadeLayer-lapsi, joka häivyttää uuden tason näkyviin.
 ##
 ## Efektit reagoivat vain pelaajan tilaan. Kaikki pelaajan solmut haetaan
 ## get_node_or_null- ja `in`-tarkistuksilla, joten HUD toimii vaikka solmuja puuttuisi.
@@ -24,12 +27,42 @@ const HINTS: Dictionary = {
 	&"jammed": {"fi": "Ase jumissa – lataa (R)", "en": "Gun jammed – reload (R)"},
 }
 
+## Otsikkokortin vaiheet sekunteina: sisään, näkyvissä, ulos (yhteensä noin 4 s).
+const TITLE_FADE_IN: float = 0.6
+const TITLE_HOLD: float = 2.8
+const TITLE_FADE_OUT: float = 0.7
+## Kirjoituskone-efekti: merkkiä sekunnissa.
+const TYPEWRITER_CPS: float = 28.0
+const NICKNAME_FADE_IN: float = 0.25
+const NICKNAME_HOLD: float = 3.5
+const NICKNAME_FADE_OUT: float = 0.8
+const OBJECTIVE_FADE: float = 0.35
+
+const NICKNAME_CAPTION: Dictionary = {"fi": "Lempinimesi:", "en": "Your nickname:"}
+const OBJECTIVE_HEADER: Dictionary = {"fi": "TEHTÄVÄ", "en": "OBJECTIVE"}
+
 ## Tekstitysten ja vihjeiden kieli: &"fi" tai &"en".
 @export var language: StringName = &"fi"
 
 @onready var _effects: ColorRect = $Effects
 @onready var _hint_label: Label = $Hint
 @onready var _subtitles: RichTextLabel = $Subtitles
+@onready var _objective: PanelContainer = $Objective
+@onready var _objective_header: Label = $Objective/VBox/Header
+@onready var _objective_text: Label = $Objective/VBox/Text
+@onready var _title_card: Control = $TitleCard
+@onready var _title_label: Label = $TitleCard/Band/VBox/Title
+@onready var _title_subtitle: Label = $TitleCard/Band/VBox/Subtitle
+@onready var _nickname_card: Control = $NicknameCard
+@onready var _nickname_caption: Label = $NicknameCard/Tag/VBox/Caption
+@onready var _nickname_label: Label = $NicknameCard/Tag/VBox/Stamp/Name
+@onready var _fade_layer: FadeLayer = $FadeLayer as FadeLayer
+
+var _title_tween: Tween
+var _nickname_tween: Tween
+var _objective_tween: Tween
+var _objective_fi: String = ""
+var _objective_en: String = ""
 
 var _player: Node
 var _search_timer: float = 0.0
@@ -50,6 +83,12 @@ func _ready() -> void:
 	EventBus.barrel_overheated.connect(_on_barrel_overheated)
 	EventBus.belt_empty.connect(_on_belt_empty)
 	EventBus.squad_callout.connect(_on_squad_callout)
+	EventBus.objective_prompt.connect(show_objective)
+	EventBus.title_card.connect(show_title_card)
+	EventBus.nickname_assigned.connect(show_nickname_card)
+	_objective.visible = false
+	_title_card.visible = false
+	_nickname_card.visible = false
 	_find_player()
 
 
@@ -85,6 +124,97 @@ func show_subtitle(speaker_name: String, text: String) -> void:
 	_refresh_subtitles()
 
 
+## Näyttää tehtäväohjeen HUDin kulmassa. Molemmat tekstit tyhjiä = piilota.
+## Kieli valitaan `language`-asetuksesta; puuttuva käännös korvataan toisella kielellä.
+func show_objective(text_fi: String, text_en: String) -> void:
+	_objective_fi = text_fi
+	_objective_en = text_en
+	if _objective_tween != null and _objective_tween.is_valid():
+		_objective_tween.kill()
+	var text: String = _pick(text_fi, text_en)
+	if text.is_empty():
+		_objective_text.text = ""
+		_objective.visible = false
+		_objective.modulate.a = 1.0
+		return
+	_objective_header.text = String(OBJECTIVE_HEADER.get(String(language), OBJECTIVE_HEADER["fi"]))
+	_objective_text.text = text
+	_objective.reset_size()
+	_objective.visible = true
+	_objective.modulate.a = 0.0
+	_objective_tween = create_tween()
+	_objective_tween.tween_property(_objective, ^"modulate:a", 1.0, OBJECTIVE_FADE)
+
+
+## Nykyinen näkyvä tehtäväohje (tyhjä, jos piilossa).
+func get_objective_text() -> String:
+	return _objective_text.text if _objective.visible else ""
+
+
+## Otsikkokortti keskelle ruutua: iso sapluunaotsikko ja konekirjoitettu alaotsikko.
+## Häivyttyy sisään, kirjoittuu merkki kerrallaan ja häipyy noin 4 sekunnissa.
+## Tyhjä otsikko ja alaotsikko piilottavat kortin heti.
+func show_title_card(title: String, subtitle: String) -> void:
+	if _title_tween != null and _title_tween.is_valid():
+		_title_tween.kill()
+	if title.is_empty() and subtitle.is_empty():
+		_title_card.visible = false
+		_title_card.modulate.a = 0.0
+		return
+	_title_label.text = title.to_upper()
+	_title_subtitle.text = subtitle
+	_title_label.visible_ratio = 0.0
+	_title_subtitle.visible_ratio = 0.0
+	_title_card.visible = true
+	_title_card.modulate.a = 0.0
+	var title_time: float = maxf(title.length() / TYPEWRITER_CPS, 0.05)
+	var subtitle_time: float = maxf(subtitle.length() / TYPEWRITER_CPS, 0.05)
+	_title_tween = create_tween()
+	_title_tween.tween_property(_title_card, ^"modulate:a", 1.0, TITLE_FADE_IN)
+	_title_tween.parallel().tween_property(_title_label, ^"visible_ratio", 1.0, minf(title_time, TITLE_FADE_IN + 0.6))
+	_title_tween.tween_property(_title_subtitle, ^"visible_ratio", 1.0, minf(subtitle_time, 1.4))
+	var typed: float = minf(subtitle_time, 1.4)
+	_title_tween.tween_interval(maxf(TITLE_HOLD - typed, 0.6))
+	_title_tween.tween_property(_title_card, ^"modulate:a", 0.0, TITLE_FADE_OUT)
+	_title_tween.tween_callback(_title_card.hide)
+
+
+## Onko otsikkokortti näkyvissä.
+func is_title_card_visible() -> bool:
+	return _title_card.visible
+
+
+## Lempinimikortti: "Lempinimesi: <nimi>" leimasimena, häipyy noin 4,5 sekunnissa.
+func show_nickname_card(nickname: String) -> void:
+	if _nickname_tween != null and _nickname_tween.is_valid():
+		_nickname_tween.kill()
+	if nickname.is_empty():
+		_nickname_card.visible = false
+		return
+	_nickname_caption.text = String(NICKNAME_CAPTION.get(String(language), NICKNAME_CAPTION["fi"]))
+	_nickname_label.text = nickname.to_upper()
+	_nickname_card.visible = true
+	_nickname_card.modulate.a = 0.0
+	_nickname_label.scale = Vector2.ONE
+	_nickname_tween = create_tween()
+	_nickname_tween.tween_property(_nickname_card, ^"modulate:a", 1.0, NICKNAME_FADE_IN)
+	_nickname_tween.tween_interval(NICKNAME_HOLD)
+	_nickname_tween.tween_property(_nickname_card, ^"modulate:a", 0.0, NICKNAME_FADE_OUT)
+	_nickname_tween.tween_callback(_nickname_card.hide)
+
+
+## Lempinimikortin koko teksti, esim. "Lempinimesi: STUMBLES" (tyhjä, jos piilossa).
+func get_nickname_card_text() -> String:
+	if not _nickname_card.visible:
+		return ""
+	return "%s %s" % [_nickname_caption.text, _nickname_label.text]
+
+
+## HUDin oma FadeLayer (häivyttää tason näkyviin automaattisesti käynnistyessä).
+func get_fade_layer() -> FadeLayer:
+	return _fade_layer
+
+
 # --- Signaalit -----------------------------------------------------------------
 
 func _on_actor_hit(target: Node3D, damage: float, _body_part: StringName) -> void:
@@ -114,6 +244,12 @@ func _on_squad_callout(_speaker: Node3D, line_id: StringName) -> void:
 
 
 # --- Sisäiset ------------------------------------------------------------------
+
+func _pick(text_fi: String, text_en: String) -> String:
+	if language == &"en":
+		return text_en if not text_en.is_empty() else text_fi
+	return text_fi if not text_fi.is_empty() else text_en
+
 
 func _find_player() -> void:
 	_search_timer = PLAYER_SEARCH_INTERVAL

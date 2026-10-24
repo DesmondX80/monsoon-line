@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="VoiceLineCatalog" load_steps=19 format=3]
+[gd_resource type="Resource" script_class="VoiceLineCatalog" load_steps=46 format=3]
 
 [ext_resource type="Script" path="res://audio/lines/voice_line.gd" id="1_ivtui"]
 [ext_resource type="Script" path="res://audio/lines/voice_line_catalog.gd" id="2_7qri8"]
@@ -147,6 +147,249 @@ speaker_name_en = "Rifleman"
 text_fi = "Mies maassa! Lääkintämies!"
 text_en = "Man down! Medic!"
 
+[sub_resource type="Resource" id="Resource_m2_obi"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_obstacle_intro"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Esterata! Muuri, verkko, piikkilanka, puomi. Yli, ali ja läpi – ja ennen kuin minä ehdin vanheta. Olen jo vanha!"
+text_en = "Obstacle course! Wall, net, wire, beam. Over, under and through – and you finish before I get old. I am ALREADY old!"
+
+[sub_resource type="Resource" id="Resource_m2_obf"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_obstacle_fell"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Ylös! Tuo multa on valtion omaisuutta, ja sinä hieroskelet naamaasi siihen!"
+text_en = "Get UP! That dirt is government property and you are rubbing your face all over it!"
+
+[sub_resource type="Resource" id="Resource_m2_obw"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_obstacle_wire"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Maha MAAHAN, sotilas! Tuo lanka haluaa housusi, ja se on voitolla!"
+text_en = "Belly DOWN, trooper! That wire wants your britches and it is WINNING!"
+
+[sub_resource type="Resource" id="Resource_m2_obg"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_obstacle_done_good"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Katsohan. Jokin Georgiassa liikkuu siirappia nopeammin. Älä anna sen nousta päähäsi – siellä ei ole tilaa."
+text_en = "Well, look at that. Something in Georgia moves faster than molasses. Do not let it go to your head – there is no room up there."
+
+[sub_resource type="Resource" id="Resource_m2_obb"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_obstacle_done_bad"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Olen saanut nopeampaa postia Koreasta! Kaksikymmentä punnerrusta, ja mieti samalla elämäsi valintoja!"
+text_en = "I have gotten faster mail from Korea! Gimme twenty, and think about your life choices while you are down there!"
+
+[sub_resource type="Resource" id="Resource_m2_mgi"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_mg_intro"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Tämä on M60. Kymmenen kiloa puhdasta mielipidettä. Makuulle, kaksijalka multaan, ja puhut noille tauluille LYHYIN lausein!"
+text_en = "This is the M60. Twenty-three pounds of pure opinion. Get down, put that bipod in the dirt, and talk to those targets in SHORT sentences!"
+
+[sub_resource type="Resource" id="Resource_m2_mgp"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_mg_bipod"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Kaksijalka ALAS! Et ole John Wayne, eikä tuo ole elokuvakamera!"
+text_en = "Bipod DOWN! You are not John Wayne and that is not a movie camera!"
+
+[sub_resource type="Resource" id="Resource_m2_mgl"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_mg_belt"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Nauha loppu! Kansi auki, uusi nauha syöttöpöydälle, kansi kiinni! Äitisi tekisi sen nopeammin kirkkovaatteissa!"
+text_en = "Belt is empty! Cover up, new belt on the feed tray, cover down! Your mama could do it faster in her church clothes!"
+
+[sub_resource type="Resource" id="Resource_m2_mgr"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_mg_barrel"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Piipunvaihto! Asbestikinnas, EI paljasta kättä – ellet halua piipun muotoista matkamuistoa!"
+text_en = "Barrel change! Asbestos mitt, NOT your bare hand – unless you want a souvenir shaped like a gun barrel!"
+
+[sub_resource type="Resource" id="Resource_m2_mgo"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_mg_overheat"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Sinä keitit sen! Piippu hehkuu kuin joulukuusi heinäkuussa! Lyhyitä sarjoja! LYHYITÄ!"
+text_en = "You COOKED it! That barrel is glowing like Christmas in July! Short bursts! SHORT!"
+
+[sub_resource type="Resource" id="Resource_m2_mgg"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_mg_done_good"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Hyvää ammuntaa. En ole ylpeä, olen vain yllättynyt. Yllätys on toiseksi lempitunteeni huutamisen jälkeen."
+text_en = "Fine shooting. I am not proud, I am just surprised. Surprise is my second favorite feeling, right after yelling."
+
+[sub_resource type="Resource" id="Resource_m2_mgb"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_mg_done_bad"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Nuo taulut kuolevat vanhuuteen, eivät lyijyyn! Seuraavalla kerralla tähtäät ennen kuin rukoilet!"
+text_en = "Those targets are gonna die of old age, not lead! Next time you aim BEFORE you pray!"
+
+[sub_resource type="Resource" id="Resource_m2_twi"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_tower_intro"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Kolmekymmentäneljä jalkaa! Portaat ylös, ja kun sanon NYT, sinä lähdet! Jalat ja polvet yhteen, ja kieri kun osut maahan – tai maa kierittää sinut!"
+text_en = "Thirty-four feet! Up those stairs, and when I say NOW, you go! Feet and knees together, and roll when you hit – or the ground will roll YOU!"
+
+[sub_resource type="Resource" id="Resource_m2_twg"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_tower_good"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Jalat yhdessä, polvet koukussa, kierit kuin rehusäkki! Tuo oli laskeutumisrulla! Joku kirjoittakoon sen ylös!"
+text_en = "Feet together, knees bent, rolled like a sack of feed! THAT is a PLF! Somebody write that down!"
+
+[sub_resource type="Resource" id="Resource_m2_twh"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_tower_hard"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Tulit alas kuin pudotettu piano! Jalat ja polvet YHTEEN! Uudestaan huomenna ja ylihuomenna, kunnes maa alkaa pitää sinusta!"
+text_en = "You came down like a dropped piano! Feet and knees TOGETHER! Again tomorrow, and the day after, till the dirt starts to like you!"
+
+[sub_resource type="Resource" id="Resource_m2_idl"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_idle_hurry"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Tylsistytänkö sinua, sotilas? LIIKETTÄ! Sota ei odota, enkä odota minäkään!"
+text_en = "Am I boring you, trooper? MOVE! The war will not wait, and neither will I!"
+
+[sub_resource type="Resource" id="Resource_m2_nic"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_nickname"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Sotilas! Olen katsonut sinua koko päivän, ja olen tehnyt päätökseni. Tästä lähtien nimesi on {nickname}! Kanna sitä ylpeänä, koska sitä ei saa pois!"
+text_en = "Trooper! I have watched you all day and I have made up my mind. From now on your name is {nickname}! Wear it proud, because it does not come off!"
+
+[sub_resource type="Resource" id="Resource_m2_grd"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_graduation"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Kuunnelkaa! Vastoin kaikkia neuvojani Yhdysvaltain armeija sanoo, että olette laskuvarjojääkäreitä. Seuraavaksi oikea lentokone. Älkää pudotko siitä ennen kuin käsketään!"
+text_en = "Listen up! Against all my advice, the United States Army says you are paratroopers. Next stop, a real airplane. Do NOT fall out of it until somebody tells you to!"
+
+[sub_resource type="Resource" id="Resource_m2_jgr"]
+script = ExtResource("1_ivtui")
+id = &"jumpmaster_get_ready"
+speaker_role = &"jumpmaster"
+speaker_name_fi = "Hyppymestari"
+speaker_name_en = "Jumpmaster"
+text_fi = "VALMISTAUTUKAA!"
+text_en = "GET READY!"
+
+[sub_resource type="Resource" id="Resource_m2_jsu"]
+script = ExtResource("1_ivtui")
+id = &"jumpmaster_stand_up"
+speaker_role = &"jumpmaster"
+speaker_name_fi = "Hyppymestari"
+speaker_name_en = "Jumpmaster"
+text_fi = "Ulommat hyppääjät – YLÖS! Sisemmät hyppääjät – YLÖS!"
+text_en = "Outboard personnel – STAND UP! Inboard personnel – STAND UP!"
+
+[sub_resource type="Resource" id="Resource_m2_jhu"]
+script = ExtResource("1_ivtui")
+id = &"jumpmaster_hook_up"
+speaker_role = &"jumpmaster"
+speaker_name_fi = "Hyppymestari"
+speaker_name_en = "Jumpmaster"
+text_fi = "KOUKUT VAIJERIIN!"
+text_en = "HOOK UP!"
+
+[sub_resource type="Resource" id="Resource_m2_jce"]
+script = ExtResource("1_ivtui")
+id = &"jumpmaster_check_equipment"
+speaker_role = &"jumpmaster"
+speaker_name_fi = "Hyppymestari"
+speaker_name_en = "Jumpmaster"
+text_fi = "Tarkistakaa avausköydet! TARKISTAKAA VARUSTEET! Ilmoittakaa varusteiden tarkastus!"
+text_en = "Check static lines! CHECK EQUIPMENT! Sound off for equipment check!"
+
+[sub_resource type="Resource" id="Resource_m2_jso"]
+script = ExtResource("1_ivtui")
+id = &"jumpmaster_sound_off"
+speaker_role = &"jumpmaster"
+speaker_name_fi = "Hyppymestari"
+speaker_name_en = "Jumpmaster"
+text_fi = "ILMOITTAKAA VARUSTEIDEN TARKASTUS!"
+text_en = "SOUND OFF FOR EQUIPMENT CHECK!"
+
+[sub_resource type="Resource" id="Resource_m2_jsd"]
+script = ExtResource("1_ivtui")
+id = &"jumpmaster_stand_in_door"
+speaker_role = &"jumpmaster"
+speaker_name_fi = "Hyppymestari"
+speaker_name_en = "Jumpmaster"
+text_fi = "OVELLE!"
+text_en = "STAND IN THE DOOR!"
+
+[sub_resource type="Resource" id="Resource_m2_jgo"]
+script = ExtResource("1_ivtui")
+id = &"jumpmaster_go"
+speaker_role = &"jumpmaster"
+speaker_name_fi = "Hyppymestari"
+speaker_name_en = "Jumpmaster"
+text_fi = "HYPPY! MENE! MENE!"
+text_en = "GO! GO! GO!"
+
+[sub_resource type="Resource" id="Resource_m2_sok"]
+script = ExtResource("1_ivtui")
+id = &"squad_sound_off_ok"
+speaker_role = &"squad"
+speaker_name_fi = "Hyppääjät"
+speaker_name_en = "Jumpers"
+text_fi = "Kunnossa! Kunnossa! … Kaikki kunnossa, hyppymestari!"
+text_en = "Okay! Okay! … All okay, Jumpmaster!"
+
+[sub_resource type="Resource" id="Resource_m2_sld"]
+script = ExtResource("1_ivtui")
+id = &"squad_landed"
+speaker_role = &"squad_leader"
+speaker_name_fi = "Ryhmänjohtaja"
+speaker_name_en = "Squad Leader"
+text_fi = "Pois pudotusalueelta! Kokoontuminen luokseni metsänrajaan! {nickname}, sika irti valjaista ja eteen!"
+text_en = "Clear the drop zone! Rally on me at the tree line! {nickname}, get that pig out of the harness and up front!"
+
 [resource]
 script = ExtResource("2_7qri8")
-lines = Array[ExtResource("1_ivtui")]([SubResource("Resource_pplbc"), SubResource("Resource_24lum"), SubResource("Resource_30hbk"), SubResource("Resource_0uje4"), SubResource("Resource_0q710"), SubResource("Resource_afnaj"), SubResource("Resource_4gc0u"), SubResource("Resource_mn460"), SubResource("Resource_pboga"), SubResource("Resource_stqao"), SubResource("Resource_l2kwc"), SubResource("Resource_fcx38"), SubResource("Resource_5o4ub"), SubResource("Resource_s0jue"), SubResource("Resource_s7shx"), SubResource("Resource_qyxwy")])
+lines = Array[ExtResource("1_ivtui")]([SubResource("Resource_pplbc"), SubResource("Resource_24lum"), SubResource("Resource_30hbk"), SubResource("Resource_0uje4"), SubResource("Resource_0q710"), SubResource("Resource_afnaj"), SubResource("Resource_4gc0u"), SubResource("Resource_mn460"), SubResource("Resource_pboga"), SubResource("Resource_stqao"), SubResource("Resource_l2kwc"), SubResource("Resource_fcx38"), SubResource("Resource_5o4ub"), SubResource("Resource_s0jue"), SubResource("Resource_s7shx"), SubResource("Resource_qyxwy"), SubResource("Resource_m2_obi"), SubResource("Resource_m2_obf"), SubResource("Resource_m2_obw"), SubResource("Resource_m2_obg"), SubResource("Resource_m2_obb"), SubResource("Resource_m2_mgi"), SubResource("Resource_m2_mgp"), SubResource("Resource_m2_mgl"), SubResource("Resource_m2_mgr"), SubResource("Resource_m2_mgo"), SubResource("Resource_m2_mgg"), SubResource("Resource_m2_mgb"), SubResource("Resource_m2_twi"), SubResource("Resource_m2_twg"), SubResource("Resource_m2_twh"), SubResource("Resource_m2_idl"), SubResource("Resource_m2_nic"), SubResource("Resource_m2_grd"), SubResource("Resource_m2_jgr"), SubResource("Resource_m2_jsu"), SubResource("Resource_m2_jhu"), SubResource("Resource_m2_jce"), SubResource("Resource_m2_jso"), SubResource("Resource_m2_jsd"), SubResource("Resource_m2_jgo"), SubResource("Resource_m2_sok"), SubResource("Resource_m2_sld")])
