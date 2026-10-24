@@ -1,0 +1,82 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://ui/hud.gd" id="1"]
+[ext_resource type="Shader" path="res://ui/shaders/hud_effects.gdshader" id="2"]
+[ext_resource type="PackedScene" path="res://ui/debug_overlay.tscn" id="3"]
+
+[sub_resource type="ShaderMaterial" id="effects_material"]
+shader = ExtResource("2")
+shader_parameter/suppression = 0.0
+shader_parameter/hit_flash = 0.0
+shader_parameter/bleed_pulse = 0.0
+shader_parameter/heat_shimmer = 0.0
+shader_parameter/blood_color = Color(0.45, 0.02, 0.02, 1)
+
+[sub_resource type="SystemFont" id="stencil"]
+font_names = PackedStringArray("Stencil", "Courier New", "DejaVu Sans Mono", "Monospace")
+font_weight = 700
+
+[sub_resource type="SystemFont" id="subtitle_font"]
+font_names = PackedStringArray("DejaVu Sans", "Arial", "Sans-Serif")
+
+[node name="HUD" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1")
+
+[node name="Effects" type="ColorRect" parent="."]
+visible = false
+material = SubResource("effects_material")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Hint" type="Label" parent="."]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -260.0
+offset_right = 400.0
+offset_bottom = -220.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.86, 0.72, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = SubResource("stencil")
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitles" type="RichTextLabel" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -560.0
+offset_top = -200.0
+offset_right = 560.0
+offset_bottom = -60.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.95, 0.95, 0.9, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/normal_font = SubResource("subtitle_font")
+theme_override_font_sizes/normal_font_size = 22
+bbcode_enabled = true
+scroll_active = false
+fit_content = false
+
+[node name="DebugOverlay" parent="." instance=ExtResource("3")]
