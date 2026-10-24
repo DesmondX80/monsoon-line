@@ -1,0 +1,90 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://ai/test/prologue_sandbox.gd" id="1"]
+[ext_resource type="PackedScene" path="res://missions/prologue/prologue_director.tscn" id="2"]
+[ext_resource type="Script" path="res://ai/test/sandbox_station.gd" id="3"]
+
+[sub_resource type="NavigationMesh" id="navmesh"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 1
+agent_radius = 0.5
+agent_height = 1.8
+agent_max_climb = 0.25
+
+[sub_resource type="BoxShape3D" id="ground_shape"]
+size = Vector3(60, 1, 60)
+
+[sub_resource type="BoxMesh" id="ground_mesh"]
+size = Vector3(60, 1, 60)
+
+[sub_resource type="BoxShape3D" id="wall_shape"]
+size = Vector3(10, 2, 1)
+
+[sub_resource type="BoxMesh" id="wall_mesh"]
+size = Vector3(10, 2, 1)
+
+[node name="PrologueSandbox" type="Node3D" node_paths=PackedStringArray("nav_region", "director")]
+script = ExtResource("1")
+nav_region = NodePath("NavigationRegion3D")
+director = NodePath("PrologueDirector")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 0, 20, 0)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("navmesh")
+
+[node name="Ground" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Ground"]
+shape = SubResource("ground_shape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Ground"]
+mesh = SubResource("ground_mesh")
+
+[node name="Wall" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Wall"]
+shape = SubResource("wall_shape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Wall"]
+mesh = SubResource("wall_mesh")
+
+[node name="Player" type="Node3D" parent="." groups=["player", "player_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+
+[node name="TibbsSpawn" type="Marker3D" parent="." groups=["tibbs_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="StationObstacle" type="Marker3D" parent="." groups=["station_obstacle_course"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -12)
+
+[node name="StationMg" type="Marker3D" parent="." groups=["station_mg_range"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.1, -10)
+
+[node name="StationTower" type="Marker3D" parent="." groups=["station_jump_tower"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.1, 8)
+
+[node name="ObstacleCourse" type="Node3D" parent="."]
+script = ExtResource("3")
+station_id = &"obstacle_course"
+duration = 8.0
+result = {"falls": 1, "time_s": 70.0, "wire_touches": 3}
+events = Array[StringName]([&"fell", &"wire_touched"])
+
+[node name="MgRange" type="Node3D" parent="."]
+script = ExtResource("3")
+station_id = &"mg_range"
+duration = 6.0
+result = {"barrel_changed": false, "belt_reloaded": true, "bipod_used": true, "hits": 30, "overheated": false, "shots": 80}
+
+[node name="JumpTower" type="Node3D" parent="."]
+script = ExtResource("3")
+station_id = &"jump_tower"
+duration = 4.0
+result = {"landing": &"good"}
+
+[node name="PrologueDirector" parent="." instance=ExtResource("2")]
+change_scene_enabled = false

@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://ai/test/drop_sandbox.gd" id="1"]
+[ext_resource type="PackedScene" path="res://missions/drop/drop_director.tscn" id="2"]
+[ext_resource type="Script" path="res://tests/missions/fake_parachute.gd" id="3"]
+
+[node name="DropSandbox" type="Node3D" node_paths=PackedStringArray("director", "player")]
+script = ExtResource("1")
+director = NodePath("DropDirector")
+player = NodePath("Player")
+
+[node name="Aircraft" type="Node3D" parent="." groups=["aircraft"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 300, 0)
+
+[node name="JumpDoor" type="Marker3D" parent="Aircraft" groups=["jump_door"]]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 2, 0, 4)
+
+[node name="JumpLight" type="OmniLight3D" parent="Aircraft" groups=["jump_light"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 1.5, 3.5)
+light_color = Color(1, 0.1, 0.1, 1)
+
+[node name="Npc1" type="Node3D" parent="Aircraft" groups=["npc_jumper"]]
+
+[node name="Npc2" type="Node3D" parent="Aircraft" groups=["npc_jumper"]]
+
+[node name="Player" type="Node3D" parent="." groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 300, 0)
+
+[node name="ParachuteController" type="Node" parent="Player"]
+script = ExtResource("3")
+
+[node name="DropDirector" parent="." instance=ExtResource("2")]
+change_scene_enabled = false
