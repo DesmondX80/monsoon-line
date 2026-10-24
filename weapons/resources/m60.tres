@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://weapons/resources/weapon_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "M60"
+rounds_per_minute = 550.0
+magazine_size = 100
+reload_time = 7.0
+damage = 55.0
+muzzle_velocity = 850.0
+bullet_mass_g = 9.5
+penetration = 35.0
+recoil_vertical = 2.2
+recoil_horizontal = 1.1
+sway = 2.5
+hip_spread_deg = 7.0
+supported_spread_multiplier = 0.15
+uses_belt = true
+has_bipod = true
+heat_per_shot = 0.004
+cooling_per_second = 0.03
+barrel_change_time = 6.0
+jam_chance_when_hot = 0.02
