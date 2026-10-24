@@ -7,3 +7,6 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Coden agenttien työkansiot
+.claude/worktrees/
