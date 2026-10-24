@@ -1,0 +1,152 @@
+[gd_resource type="Resource" script_class="VoiceLineCatalog" load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://audio/lines/voice_line.gd" id="1_ivtui"]
+[ext_resource type="Script" path="res://audio/lines/voice_line_catalog.gd" id="2_7qri8"]
+
+[sub_resource type="Resource" id="Resource_pplbc"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_welcome"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Kuunnelkaa, munankuoret! Olen kersantti Tibbs. Seuraavat kolme viikkoa olen teidän äitinne, isänne ja syy siihen, että kirjoitatte kotiin itkien."
+text_en = "Listen up, eggshells! I am Sergeant Tibbs. For the next three weeks I am your mama, your papa and the reason you write home crying."
+
+[sub_resource type="Resource" id="Resource_24lum"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_nickname_intro"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Kotona sinulla oli nimi. Täällä sinulla on se nimi, jonka minä annan. Ja sinä tulet vihaamaan sitä."
+text_en = "Back home you had a name. Here you get the name I give you. And you are gonna hate it."
+
+[sub_resource type="Resource" id="Resource_30hbk"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_nickname_given"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Tästä päivästä lähtien olet {nickname}. Toista se niin, että Georgia kuulee!"
+text_en = "From this day on you are {nickname}. Say it back so the whole state of Georgia hears it!"
+
+[sub_resource type="Resource" id="Resource_0uje4"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_too_slow"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "{nickname}! Mummoni juoksee tuon matkan nopeammin, ja hän on ollut haudassa vuodesta 1952!"
+text_en = "{nickname}! My granny runs that faster, and she has been in the ground since 1952!"
+
+[sub_resource type="Resource" id="Resource_0q710"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_tower"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Torni on vain kolmekymmentäneljä jalkaa, {nickname}. Maa ei ole sinulle vihainen. Vielä."
+text_en = "That tower is only thirty-four feet, {nickname}. The ground is not mad at you. Yet."
+
+[sub_resource type="Resource" id="Resource_afnaj"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_short"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Katsotko minua alaspäin, sotilas? Tässä komppaniassa kukaan ei ole minua pidempi. Punnerra, kunnes olet!"
+text_en = "You looking down at me, trooper? Nobody in this company is taller than me. Push till you are shorter!"
+
+[sub_resource type="Resource" id="Resource_4gc0u"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_pig"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Tuo sika painaa enemmän kuin aivosi, {nickname}. Anna sen hoitaa ajattelu."
+text_en = "That pig weighs more than your brain, {nickname}. Let the gun do the thinking."
+
+[sub_resource type="Resource" id="Resource_mn460"]
+script = ExtResource("1_ivtui")
+id = &"tibbs_wings"
+speaker_role = &"drill_sergeant"
+speaker_name_fi = "Kers. Tibbs"
+speaker_name_en = "Sgt. Tibbs"
+text_fi = "Te saatte siipenne. En tiedä miten. Kirjoitan siitä vielä kirjan."
+text_en = "You are getting your wings. I do not know how. I am writing a book about it."
+
+[sub_resource type="Resource" id="Resource_pboga"]
+script = ExtResource("1_ivtui")
+id = &"sl_contact_front"
+speaker_role = &"squad_leader"
+speaker_name_fi = "Ryhmänjohtaja"
+speaker_name_en = "Squad Leader"
+text_fi = "Kontakti edessä! Maahan ja tulta!"
+text_en = "Contact front! Get down and return fire!"
+
+[sub_resource type="Resource" id="Resource_stqao"]
+script = ExtResource("1_ivtui")
+id = &"sl_gun_up"
+speaker_role = &"squad_leader"
+speaker_name_fi = "Ryhmänjohtaja"
+speaker_name_en = "Squad Leader"
+text_fi = "Konekivääri eteen! {nickname}, pane se sika laulamaan!"
+text_en = "Gun up! {nickname}, make that pig sing!"
+
+[sub_resource type="Resource" id="Resource_l2kwc"]
+script = ExtResource("1_ivtui")
+id = &"sl_cease_fire"
+speaker_role = &"squad_leader"
+speaker_name_fi = "Ryhmänjohtaja"
+speaker_name_en = "Squad Leader"
+text_fi = "Tulitauko! Tulitauko! Säästäkää patruunat."
+text_en = "Cease fire! Cease fire! Save your ammo."
+
+[sub_resource type="Resource" id="Resource_fcx38"]
+script = ExtResource("1_ivtui")
+id = &"ag_new_belt"
+speaker_role = &"assistant_gunner"
+speaker_name_fi = "Avustaja"
+speaker_name_en = "Assistant Gunner"
+text_fi = "Uusi nauha tulossa, pidä pää alhaalla!"
+text_en = "New belt coming, keep your head down!"
+
+[sub_resource type="Resource" id="Resource_5o4ub"]
+script = ExtResource("1_ivtui")
+id = &"ag_barrel"
+speaker_role = &"assistant_gunner"
+speaker_name_fi = "Avustaja"
+speaker_name_en = "Assistant Gunner"
+text_fi = "Piippu hehkuu! Anna tänne, vaihdetaan!"
+text_en = "Barrel is glowing! Hand it here, we swap!"
+
+[sub_resource type="Resource" id="Resource_s0jue"]
+script = ExtResource("1_ivtui")
+id = &"ag_hump"
+speaker_role = &"assistant_gunner"
+speaker_name_fi = "Avustaja"
+speaker_name_en = "Assistant Gunner"
+text_fi = "Sinä kannat sikaa, minä kannan huolet. Reilu jako."
+text_en = "You hump the pig, I hump the worries. Fair deal."
+
+[sub_resource type="Resource" id="Resource_s7shx"]
+script = ExtResource("1_ivtui")
+id = &"rifleman_taking_fire"
+speaker_role = &"rifleman"
+speaker_name_fi = "Kiväärimies"
+speaker_name_en = "Rifleman"
+text_fi = "Ne ampuvat meitä! Mistä ne ampuvat?!"
+text_en = "Taking fire! Where is it coming from?!"
+
+[sub_resource type="Resource" id="Resource_qyxwy"]
+script = ExtResource("1_ivtui")
+id = &"rifleman_man_down"
+speaker_role = &"rifleman"
+speaker_name_fi = "Kiväärimies"
+speaker_name_en = "Rifleman"
+text_fi = "Mies maassa! Lääkintämies!"
+text_en = "Man down! Medic!"
+
+[resource]
+script = ExtResource("2_7qri8")
+lines = Array[ExtResource("1_ivtui")]([SubResource("Resource_pplbc"), SubResource("Resource_24lum"), SubResource("Resource_30hbk"), SubResource("Resource_0uje4"), SubResource("Resource_0q710"), SubResource("Resource_afnaj"), SubResource("Resource_4gc0u"), SubResource("Resource_mn460"), SubResource("Resource_pboga"), SubResource("Resource_stqao"), SubResource("Resource_l2kwc"), SubResource("Resource_fcx38"), SubResource("Resource_5o4ub"), SubResource("Resource_s0jue"), SubResource("Resource_s7shx"), SubResource("Resource_qyxwy")])
