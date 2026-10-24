@@ -2,6 +2,8 @@ class_name PlayerController
 extends CharacterBody3D
 ## Pelaajan liike ja kamera. Konekiväärimiehen kuorma hidastaa liikettä ja kuluttaa kestävyyttä.
 ## Rekyyli ja huojunta tulevat MachineGunilta (WeaponData), kaksijalan tuki BipodSupportilta.
+## Laskuvarjohyppy ja laskeutumisen arviointi (PLF) ParachuteControllerilta: ilmassa ei ammuta,
+## ei lasketa kaksijalkaa eikä juosta.
 
 enum Stance { STAND, CROUCH, PRONE }
 
@@ -26,6 +28,7 @@ const SUPPRESSIBLE_GROUP := &"suppressible"
 @onready var weapon: MachineGun = $Head/MachineGun
 @onready var health: HealthComponent = $HealthComponent
 @onready var suppression: SuppressionComponent = $SuppressionComponent
+@onready var parachute: ParachuteController = $ParachuteController
 
 var stance: Stance = Stance.STAND
 var stamina_model: StaminaModel = StaminaModel.new()
@@ -49,6 +52,8 @@ func _ready() -> void:
 	stamina_model.reference_load_kg = stamina_reference_load_kg
 	stamina_model.load_exponent = stamina_load_exponent
 	stamina_model.rest_regen_per_second = stamina_rest_regen_per_second
+	parachute.setup(health, stamina_model)
+	EventBus.jump_started.connect(_on_jump_started)
 	if not DisplayServer.get_name() == "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
@@ -61,11 +66,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		head.rotate_x(-motion.relative.y * sensitivity)
 		_clamp_pitch()
 	elif event.is_action_pressed("crouch"):
-		_set_stance(Stance.STAND if stance == Stance.CROUCH else Stance.CROUCH)
+		# Crouch toimii myös PLF-painikkeena: ajoitus ennen maakosketusta ratkaisee laskeutumisen.
+		parachute.register_plf()
+		if not parachute.is_airborne():
+			_set_stance(Stance.STAND if stance == Stance.CROUCH else Stance.CROUCH)
 	elif event.is_action_pressed("prone"):
-		_set_stance(Stance.STAND if stance == Stance.PRONE else Stance.PRONE)
+		if not parachute.is_airborne():
+			_set_stance(Stance.STAND if stance == Stance.PRONE else Stance.PRONE)
 	elif event.is_action_pressed("bipod"):
-		_toggle_bipod()
+		if not parachute.is_airborne():
+			_toggle_bipod()
 	elif event.is_action_pressed("reload"):
 		weapon.reload()
 	elif event.is_action_pressed("barrel_change"):
@@ -75,28 +85,55 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if not is_on_floor():
-		velocity += get_gravity() * delta
 	head.position.y = lerpf(head.position.y, STANCE_HEIGHT[stance], 10.0 * delta)
 
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var direction := (transform.basis * Vector3(input.x, 0, input.y)).normalized()
+	if parachute.is_stunned():
+		direction = Vector3.ZERO
 	var moving := direction != Vector3.ZERO
-	# Liike nostaa kaksijalan automaattisesti.
-	if moving and weapon.bipod_deployed:
-		weapon.retract_bipod()
-	var wants_sprint := moving and stance == Stance.STAND and Input.is_action_pressed("sprint")
-	is_sprinting = stamina_model.update(delta, wants_sprint, moving, carried_load_kg)
-	var speed := _current_speed()
-	velocity.x = direction.x * speed
-	velocity.z = direction.z * speed
+	var airborne := parachute.is_airborne()
+
+	# Hypyn aikana laskuvarjo ohjaa nopeuden (painovoima, ilmanvastus, kupu, hidas ohjaus);
+	# maassa tick vain etenee ajastimia ja palauttaa nopeuden ennallaan.
+	velocity = parachute.tick(delta, velocity, direction)
+	if airborne:
+		is_sprinting = false
+		stamina_model.update(delta, false, false, carried_load_kg)
+	else:
+		if not is_on_floor():
+			velocity += get_gravity() * delta
+		# Liike nostaa kaksijalan automaattisesti.
+		if moving and weapon.bipod_deployed:
+			weapon.retract_bipod()
+		var wants_sprint := moving and stance == Stance.STAND and Input.is_action_pressed("sprint")
+		is_sprinting = stamina_model.update(delta, wants_sprint, moving, carried_load_kg)
+		var speed := _current_speed()
+		velocity.x = direction.x * speed
+		velocity.z = direction.z * speed
+	var fall_speed := -velocity.y
 	move_and_slide()
+	parachute.report_motion(is_on_floor(), global_position.y, fall_speed)
 
 	weapon.update_handling(delta, stamina, suppression.amount)
 	_apply_aim_offset()
 
-	if Input.is_action_pressed("fire") and not is_sprinting:
+	if Input.is_action_pressed("fire") and can_fire_weapon():
 		weapon.try_fire(self)
+
+
+## Voiko asetta ampua: ei juostessa, ei hypyn aikana eikä laskeutumisen tainnutuksessa.
+func can_fire_weapon() -> bool:
+	return not is_sprinting and not parachute.is_airborne() and not parachute.is_stunned()
+
+
+func _on_jump_started(jumper: Node3D) -> void:
+	if jumper != self:
+		return
+	# Varusteet kiinnitetään hypyn ajaksi: kaksijalka ylös, pystyasento.
+	weapon.retract_bipod()
+	is_sprinting = false
+	_set_stance(Stance.STAND)
 
 
 func _current_speed() -> float:
@@ -139,7 +176,7 @@ func _has_rest() -> bool:
 
 ## Lisää kameraan rekyylin ja huojunnan muutoksen edelliseen ruutuun verrattuna.
 func _apply_aim_offset() -> void:
-	var offset := weapon.get_aim_offset()
+	var offset := weapon.get_aim_offset() + Vector2(parachute.get_camera_jolt_deg(), 0.0)
 	var change := offset - _applied_offset
 	_applied_offset = offset
 	head.rotation.x += deg_to_rad(change.x)

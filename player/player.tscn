@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://player/player_controller.gd" id="1"]
 [ext_resource type="Script" path="res://weapons/scenes/machine_gun.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://core/components/health_component.gd" id="4"]
 [ext_resource type="Script" path="res://core/components/suppression_component.gd" id="5"]
 [ext_resource type="Script" path="res://core/components/hitbox.gd" id="6"]
+[ext_resource type="Script" path="res://player/parachute/parachute_controller.gd" id="7"]
 
 [sub_resource type="CapsuleShape3D" id="capsule"]
 radius = 0.35
@@ -54,6 +55,9 @@ script = ExtResource("4")
 
 [node name="SuppressionComponent" type="Node" parent="."]
 script = ExtResource("5")
+
+[node name="ParachuteController" type="Node" parent="."]
+script = ExtResource("7")
 
 [node name="HeadHitbox" type="Area3D" parent="Head" node_paths=PackedStringArray("health")]
 collision_layer = 16
