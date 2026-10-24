@@ -1,0 +1,71 @@
+{
+  "milestone": "M2 Prologi ja hyppy (v0.2.0)",
+  "goal": "Peli alkaa harjoitusleiriltä Fort Benningissä 1966, jossa kersantti Roscoe Tibbs komentaa alokkaat esteradan, konekivääriradan ja hyppytornin läpi ja antaa pelaajalle lempinimen suorituksen perusteella. Sen jälkeen C-130-taisteluhyppy Katumin pudotusalueelle 22.2.1967, josta peli jatkuu viidakkotasolle.",
+  "flow": [
+    "ui/main_menu.tscn: Aloita → res://world/levels/fort_benning.tscn",
+    "fort_benning: otsikkokortti, Tibbsin tervetulo, asemat järjestyksessä obstacle_course → mg_range → jump_tower, lempinimi, valmistuminen → res://world/levels/c130_drop.tscn",
+    "c130_drop: otsikkokortti, hyppymestarin komennot, pelaaja hyppää ovesta, laskuvarjo aukeaa, laskeutuminen → res://world/levels/jungle_test.tscn"
+  ],
+  "contracts": {
+    "event_bus": "autoload/event_bus.gd: training_station_started, training_station_completed, training_event, objective_prompt, title_card, nickname_assigned, jumpmaster_command, jump_started, chute_opened, landed (+ olemassa oleva squad_callout tekstityksille).",
+    "stations": {
+      "obstacle_course": "result {time_s: float, falls: int, wire_touches: int}; training_event: fell, wire_touched, checkpoint",
+      "mg_range": "result {shots: int, hits: int, bipod_used: bool, belt_reloaded: bool, barrel_changed: bool, overheated: bool}; training_event: target_hit",
+      "jump_tower": "result {landing: StringName good|hard|injured}"
+    },
+    "groups_and_markers": "fort_benning: Marker3D-ryhmät player_spawn, tibbs_spawn ja station_<id> (station_obstacle_course, station_mg_range, station_jump_tower), Tibbsin seisontapaikka asemalla = sama marker. Asemasolmu (world/training/training_station.gd) ryhmässä training_station, export station_id, metodi begin() avaa radan (triggerit päälle), emittoi started/completed. c130_drop: Marker3D JumpDoor (ryhmä jump_door), JumpLight (OmniLight3D, ryhmä jump_light; punainen/vihreä), LandingZone (Area3D, ryhmä landing_zone), PlayerSpawn koneen sisällä.",
+    "player_parachute": "player.tscn saa lapsen ParachuteController (player/parachute/parachute_controller.gd). API: start_jump(exit_velocity: Vector3), is_airborne() -> bool. Laskeutuminen arvioidaan myös tavallisesta pudotuksesta yli 2 m (hyppytorni): PLF-painike (crouch-toiminto) oikeaan aikaan ennen maata = good, myöhään/ei = hard, liian kova vauhti = injured. Lähettää jump_started, chute_opened, landed.",
+    "line_ids": [
+      "tibbs_welcome", "tibbs_obstacle_intro", "tibbs_obstacle_fell", "tibbs_obstacle_wire", "tibbs_obstacle_done_good", "tibbs_obstacle_done_bad",
+      "tibbs_mg_intro", "tibbs_mg_bipod", "tibbs_mg_belt", "tibbs_mg_barrel", "tibbs_mg_overheat", "tibbs_mg_done_good", "tibbs_mg_done_bad",
+      "tibbs_tower_intro", "tibbs_tower_good", "tibbs_tower_hard", "tibbs_idle_hurry", "tibbs_nickname", "tibbs_graduation",
+      "jumpmaster_stand_up", "jumpmaster_hook_up", "jumpmaster_check_equipment", "jumpmaster_stand_in_door", "jumpmaster_go", "squad_landed"
+    ],
+    "nickname": "Englanninkieliset amerikkalaiset lempinimet (ryhmä on yhdysvaltalainen). Säännöt dataa: missions/prologue/nickname_rules.tres (NicknameRule-resurssit: ehto, prioriteetti, nimi). Esim. useita kaatumisia esteradalla → 'Stumbles', paljon piikkilankakosketuksia → 'Barbwire', piippu ylikuumeni → 'Hot Barrel', hidas esterata → 'Sandbag', korkea osumaprosentti → 'Bullseye', kova tornilaskeutuminen → 'Lawn Dart'. Deterministinen: korkein prioriteetti voittaa, oletus 'Cherry'. {nickname} korvataan repliikeissä GameState.player_nickname-arvolla."
+  },
+  "tasks": [
+    {
+      "key": "M2-01", "role": "world", "priority": "high",
+      "name": "Fort Benning -harjoitusleiri",
+      "description": "world/levels/fort_benning.tscn: kesäinen Georgia 1966, mäntyjä ja punaista savimaata, parakkirivi ja kenttä, esterata (matala muuri, kiipeilyverkko tai seinä, piikkilankaryömintä, puomi), konekivääriampumarata hiekkasäkkiasemalla ja maaleilla 50/100/200 m, 34 jalan (noin 10 m) hyppytorni portaineen ja laskeutumisalueella (sahanpuru). Ratojen triggerit ja maalit world/training/-kansioon (training_station.gd, obstacle-triggerit, TrainingTarget Hitbox-osumilla, PLF-laskeutumisalue). Markerit sopimuksen mukaan. Pelaaja instansioituna PlayerSpawniin.",
+      "acceptance": ["Taso käynnistyy headless-tilassa ilman virheitä", "Jokainen asema emittoi started/completed sopimuksen mukaisella result-sanakirjalla", "Hiekkasäkkiasemalla kaksijalan tuki toimii", "Navigaatioverkko Tibbsille (NavigationRegion3D, ajonaikainen leivonta käy)"]
+    },
+    {
+      "key": "M2-02", "role": "world", "priority": "high",
+      "name": "C-130-koneen sisätila ja pudotusalue",
+      "description": "world/levels/c130_drop.tscn: C-130:n rahtitila (penkit sivuilla, staattinen vaijeri, sivuovi auki), hyppyvalo, koneen ulkopuolella taivas ja maisema noin 300 m alapuolella: Katumin pudotusalue (aukea, elefanttiheinää, viidakon reuna, aamuaurinko helmikuu 1967). Kone liikkuu suoraan linjaa pudotusalueen yli (tai maailma liikkuu koneen ohi). LandingZone-alue ja maasto törmäyksillä. Paikkamerkki-NPC-hyppääjät penkeillä. Markerit sopimuksen mukaan.",
+      "acceptance": ["Scene käynnistyy ilman virheitä", "Ovelta hypättyä pelaaja putoaa maastoon, jossa on törmäys", "Hyppyvalo vaihdettavissa punainen/vihreä skriptillä"]
+    },
+    {
+      "key": "M2-03", "role": "gameplay", "priority": "high",
+      "name": "Laskuvarjohyppy ja laskeutuminen (PLF)",
+      "description": "player/parachute/parachute_controller.gd + lisäys player.tscn:iin. Vaiheet: ulos koneesta (staattinen vaijeri, noin 3–4 s vapaata pudotusta / avautumisnykäys), kupu auki (vajoaminen noin 5 m/s, ohjaus WASD hitaasti, kamera katsoo vapaasti), laskeutuminen. PLF: crouch-toiminto 0,1–0,5 s ennen maakosketusta = good, muuten hard, yli 8 m/s = injured (jalkavamma HealthComponentiin). Sama laskeutumisarvio tavallisille yli 2 m pudotuksille (hyppytorni). Asetta ei voi ampua ilmassa. Varusteet (M60) kiinnitettynä hypyn ajan, käyttöön laskeutumisen jälkeen.",
+      "acceptance": ["start_jump vie pelaajan vapaapudotukseen ja kupu aukeaa automaattisesti", "PLF-ajoitus tuottaa good/hard/injured ja EventBus.landed", "GUT-testit laskeutumisarviolle ja vaiheiden siirtymille"]
+    },
+    {
+      "key": "M2-04", "role": "ai", "priority": "high",
+      "name": "Kersantti Tibbs ja prologin ohjaaja",
+      "description": "ai/npc/drill_sergeant.tscn (placeholder-hahmo: kampanjahattu, khaki), liikkuu navigaatiolla asemalta toiselle, kääntyy pelaajaa kohti, elehtii puhuessaan. missions/prologue/prologue_director.gd (+ .tscn): vaiheet tervetulo → obstacle_course → mg_range → jump_tower → lempinimi → valmistuminen → scene-vaihto c130_drop. Lähettää title_card, objective_prompt, squad_callout(tibbs, line_id) sopimuksen line_id:illä, reagoi training_event-signaaleihin (kaatuminen, piikkilanka, ylikuumeneminen) ja kiirehtii, jos pelaaja vitkuttelee. Lempinimi NicknameRule-datasta, asettaa GameState.player_nickname ja lähettää nickname_assigned.",
+      "acceptance": ["Ohjaaja vie prologin alusta loppuun, kun asemien signaalit tulevat (testattavissa simuloiduilla signaaleilla)", "Lempinimi deterministinen säännöistä, GUT-testit", "Tibbs löytää asemat markereista eikä viittaa world-solmuihin suoraan polulla"]
+    },
+    {
+      "key": "M2-05", "role": "ai", "priority": "high",
+      "name": "C-130-hypyn ohjaaja",
+      "description": "missions/drop/drop_director.gd (+ .tscn): otsikkokortti 'Katum, Tay Ninh – 22. helmikuuta 1967', hyppymestarin komennot ajastettuna (jumpmaster_command + squad_callout), hyppyvalo punainen → vihreä, objective_prompt 'Hyppää ovesta (F tai Space)', pelaajan siirto ovelle ja ParachuteController.start_jump. NPC-hyppääjät poistuvat ovesta ennen/jälkeen. landed-signaalin jälkeen squad_landed-repliikki ja scene-vaihto jungle_test.tscn.",
+      "acceptance": ["Sekvenssi etenee automaattisesti ja odottaa pelaajan hyppyä", "Laskeutumisen jälkeen siirrytään viidakkotasolle"]
+    },
+    {
+      "key": "M2-06", "role": "ui-audio", "priority": "high",
+      "name": "Prologin repliikit, otsikkokortit ja ohjeet",
+      "description": "Kaikki sopimuksen line_id:t katalogiin (fi + en), alkuperäiset Tibbsin repliikit (lyhyt, äänekäs, keksii lempinimiä, hauska mutta ei elokuvalainauksia) ja historiallisesti tyypilliset hyppymestarin komennot. HUD: objective_prompt-näkymä, title_card-otsikkokortti (häivytys), lempinimikortti nickname_assigned-signaalista, ruudun häivytys scene-vaihtojen yhteyteen (FadeLayer, jota ohjaajat voivat kutsua tai joka reagoi signaaliin). Äänet: C-130:n moottorin jylinä, tuuli ovella, kuvun avautumisnykäys, parakkikentän ambienssi.",
+      "acceptance": ["Jokaisella line_id:llä on teksti fi/en", "Otsikkokortti, ohje ja lempinimikortti näkyvät signaaleista", "Uudet äänet syntetisoidaan koodissa"]
+    },
+    {
+      "key": "M2-07", "role": "lead", "priority": "high",
+      "name": "Integraatio ja v0.2.0",
+      "description": "Ohjaajat tasoihin, päävalikon Aloita → fort_benning, koko ketju valikosta viidakkoon, testit, .exe ja julkaisu v0.2.0.",
+      "acceptance": ["Ketju toimii headless-ajossa simuloiduilla syötteillä", "Kaikki testit läpi", "v0.2.0-julkaisu .exe:llä"],
+      "depends_on": ["M2-01", "M2-02", "M2-03", "M2-04", "M2-05", "M2-06"]
+    }
+  ]
+}
