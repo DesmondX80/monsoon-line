@@ -1,0 +1,96 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://world/traps/punji_pit.gd" id="1"]
+
+[sub_resource type="BoxShape3D" id="trigger_shape"]
+size = Vector3(0.9, 0.5, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="lid_mat"]
+albedo_color = Color(0.42, 0.36, 0.22, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="lid_mesh"]
+material = SubResource("lid_mat")
+size = Vector3(1.0, 0.04, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="bamboo_mat"]
+albedo_color = Color(0.62, 0.55, 0.35, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="spike_mesh"]
+material = SubResource("bamboo_mat")
+top_radius = 0.0
+bottom_radius = 0.025
+height = 0.35
+radial_segments = 5
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="hole_mat"]
+albedo_color = Color(0.06, 0.045, 0.03, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="hole_mesh"]
+material = SubResource("hole_mat")
+size = Vector3(0.95, 0.02, 0.95)
+
+[node name="PunjiPit" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1")
+
+[node name="Trigger" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("trigger_shape")
+
+[node name="Lid" type="Node3D" parent="."]
+
+[node name="Cover" type="MeshInstance3D" parent="Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("lid_mesh")
+
+[node name="PokingSpike" type="MeshInstance3D" parent="Lid"]
+transform = Transform3D(0.9, 0.4359, 0, -0.4359, 0.9, 0, 0, 0, 1, 0.47, 0.08, 0.3)
+mesh = SubResource("spike_mesh")
+
+[node name="Revealed" type="Node3D" parent="."]
+
+[node name="Hole" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+mesh = SubResource("hole_mesh")
+
+[node name="Spike0" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.288, 0.15, -0.276)
+mesh = SubResource("spike_mesh")
+
+[node name="Spike1" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.030, 0.15, -0.256)
+mesh = SubResource("spike_mesh")
+
+[node name="Spike2" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.324, 0.15, -0.258)
+mesh = SubResource("spike_mesh")
+
+[node name="Spike3" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.347, 0.15, -0.003)
+mesh = SubResource("spike_mesh")
+
+[node name="Spike4" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.044, 0.15, 0.015)
+mesh = SubResource("spike_mesh")
+
+[node name="Spike5" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.340, 0.15, -0.039)
+mesh = SubResource("spike_mesh")
+
+[node name="Spike6" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.303, 0.15, 0.275)
+mesh = SubResource("spike_mesh")
+
+[node name="Spike7" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.004, 0.15, 0.307)
+mesh = SubResource("spike_mesh")
+
+[node name="Spike8" type="MeshInstance3D" parent="Revealed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.251, 0.15, 0.272)
+mesh = SubResource("spike_mesh")
