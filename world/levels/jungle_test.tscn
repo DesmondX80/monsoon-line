@@ -1,0 +1,189 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://world/levels/jungle_test.gd" id="1"]
+[ext_resource type="Script" path="res://world/terrain/jungle_terrain.gd" id="2"]
+[ext_resource type="Script" path="res://world/vegetation/vegetation_scatter.gd" id="3"]
+[ext_resource type="Script" path="res://world/structures/bunker.gd" id="4"]
+[ext_resource type="Script" path="res://world/structures/firing_position.gd" id="5"]
+[ext_resource type="Script" path="res://world/structures/tunnel_entrance.gd" id="6"]
+[ext_resource type="PackedScene" path="res://world/traps/punji_pit.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://player/player.tscn" id="8"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
+sky_top_color = Color(0.52, 0.58, 0.6, 1)
+sky_horizon_color = Color(0.72, 0.74, 0.68, 1)
+ground_bottom_color = Color(0.18, 0.2, 0.14, 1)
+ground_horizon_color = Color(0.62, 0.65, 0.58, 1)
+sun_angle_max = 40.0
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_mat")
+
+[sub_resource type="Environment" id="env"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.55, 0.62, 0.5, 1)
+ambient_light_sky_contribution = 0.6
+ambient_light_energy = 0.8
+tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 1.5
+ssao_intensity = 1.6
+glow_enabled = true
+glow_intensity = 0.3
+glow_bloom = 0.05
+fog_enabled = true
+fog_light_color = Color(0.62, 0.68, 0.6, 1)
+fog_light_energy = 0.9
+fog_sun_scatter = 0.25
+fog_density = 0.022
+fog_aerial_perspective = 0.4
+fog_height = 3.0
+fog_height_density = 0.05
+adjustment_enabled = true
+adjustment_saturation = 0.9
+
+[sub_resource type="NavigationMesh" id="navmesh"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 1
+agent_height = 1.5
+agent_radius = 0.5
+agent_max_climb = 0.25
+agent_max_slope = 40.0
+filter_baking_aabb = AABB(-80, -3, -80, 160, 12, 160)
+
+[node name="JungleTest" type="Node3D"]
+script = ExtResource("1")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.40558, 0.29237, 0, 0.584958, 0.811064, -0.5, -0.70248, 0.50639, 0, 30, 0)
+light_color = Color(1, 0.93, 0.8, 1)
+light_energy = 1.1
+shadow_enabled = true
+directional_shadow_mode = 1
+directional_shadow_max_distance = 70.0
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("navmesh")
+
+[node name="Terrain" type="StaticBody3D" parent="NavigationRegion3D"]
+collision_mask = 0
+script = ExtResource("2")
+size = Vector2(164, 164)
+flatten_zones = PackedVector3Array(0, 50, 24, 0, -47, 30, -6, -2, 4.5, 10, 0.5, 4.5, -30, -26, 4.5, -27, 9, 2, 31, -6, 2)
+trench_path = PackedVector2Array(-27, -49.5, -20, -51, 20, -51, 27, -49.5)
+pits = PackedVector4Array(-18, -47, 1.55, 4.6, -6, -48, 1.55, 3.6, 6, -48, 1.55, 3.6, 18, -47, 1.55, 4.6, 0, -55, 0.3, 0.3, 0, -53.2, 0.6, 1.6)
+
+[node name="Jungle" type="Node3D" parent="NavigationRegion3D" node_paths=PackedStringArray("terrain")]
+script = ExtResource("3")
+terrain = NodePath("../Terrain")
+clearings = PackedVector3Array(0, 50, 23, 0, -18, 11, -6, -2, 3.5, 10, 0.5, 3.5, -30, -26, 3.5, -18, -44, 3, -6, -46, 3, 6, -46, 3, 18, -44, 3)
+undergrowth_clearings = PackedVector3Array(0, -47, 26, 0, -55, 2.5, -12, 32, 1.6, -13.6, 30, 1.6, -15.2, 28, 1.6, -16.8, 26, 1.6, -18.4, 24, 1.6, -20, 22, 1.6, -21.4, 19.4, 1.6, -22.8, 16.8, 1.6, -24.2, 14.2, 1.6, -25.6, 11.6, 1.6, -27, 9, 1.6, -27.6667, 6.5, 1.6, -28.3333, 4, 1.6, -29, 1.5, 1.6, -29.6667, -1, 1.6, -30.3333, -3.5, 1.6, -31, -6, 1.6, -31.3333, -8.66667, 1.6, -31.6667, -11.3333, 1.6, -32, -14, 1.6, -32.3333, -16.6667, 1.6, -32.6667, -19.3333, 1.6, -33, -22, 1.6, -32.5, -24.6667, 1.6, -32, -27.3333, 1.6, -31.5, -30, 1.6, -31, -32.6667, 1.6, -30.5, -35.3333, 1.6, -30, -38, 1.6, -28.8, -40.4, 1.6, -27.6, -42.8, 1.6, -26.4, -45.2, 1.6, -25.2, -47.6, 1.6, -24, -50, 1.6, 12, 32, 1.6, 13.6667, 30, 1.6, 15.3333, 28, 1.6, 17, 26, 1.6, 18.6667, 24, 1.6, 20.3333, 22, 1.6, 22, 20, 1.6, 23, 17.6667, 1.6, 24, 15.3333, 1.6, 25, 13, 1.6, 26, 10.6667, 1.6, 27, 8.33333, 1.6, 28, 6, 1.6, 28.75, 3, 1.6, 29.5, 0, 1.6, 30.25, -3, 1.6, 31, -6, 1.6, 31.5, -8.66667, 1.6, 32, -11.3333, 1.6, 32.5, -14, 1.6, 33, -16.6667, 1.6, 33.5, -19.3333, 1.6, 34, -22, 1.6, 33.5, -24.6667, 1.6, 33, -27.3333, 1.6, 32.5, -30, 1.6, 32, -32.6667, 1.6, 31.5, -35.3333, 1.6, 31, -38, 1.6, 29.6, -40.4, 1.6, 28.2, -42.8, 1.6, 26.8, -45.2, 1.6, 25.4, -47.6, 1.6, 24, -50, 1.6, 0, 30, 1.6, -0.5, 27, 1.6, -1, 24, 1.6, -1.5, 21, 1.6, -2, 18, 1.6, -2.6, 15.2, 1.6, -3.2, 12.4, 1.6, -3.8, 9.6, 1.6, -4.4, 6.8, 1.6, -5, 4, 1.6, -4.75, 1.5, 1.6, -4.5, -1, 1.6, -4.25, -3.5, 1.6, -4, -6, 1.6, -3, -8.5, 1.6, -2, -11, 1.6, -1, -13.5, 1.6, 0, -16, 1.6, -27, 9, 1.2, 31, -6, 1.2)
+
+[node name="ElephantGrass" type="Node3D" parent="NavigationRegion3D" node_paths=PackedStringArray("terrain")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 50)
+script = ExtResource("3")
+terrain = NodePath("../Terrain")
+size = Vector2(50, 50)
+scatter_seed = 22267
+chunk_size = 12.5
+clearings = PackedVector3Array(0, 6, 3)
+inclusion_radius = 22
+clearing_feather = 4.0
+tree_density = 0.0
+bush_density = 0.8
+grass_density = 1.6
+grass_height = 1.9
+grass_blades = 7
+grass_width = 0.09
+grass_visibility_end = 60.0
+grass_color = Color(0.55, 0.56, 0.28, 1)
+grass_blocks_sight = true
+grass_sight_cell = 3.0
+
+[node name="BunkerComplex" type="Node3D" parent="NavigationRegion3D"]
+
+[node name="Bunker1" type="StaticBody3D" parent="NavigationRegion3D/BunkerComplex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, -44)
+script = ExtResource("4")
+
+[node name="Bunker2" type="StaticBody3D" parent="NavigationRegion3D/BunkerComplex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -46)
+script = ExtResource("4")
+
+[node name="Bunker3" type="StaticBody3D" parent="NavigationRegion3D/BunkerComplex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -46)
+script = ExtResource("4")
+
+[node name="Bunker4" type="StaticBody3D" parent="NavigationRegion3D/BunkerComplex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, -44)
+script = ExtResource("4")
+
+[node name="TunnelEntrance" type="StaticBody3D" parent="NavigationRegion3D/BunkerComplex"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -55)
+script = ExtResource("6")
+opening = 0.6
+
+[node name="FiringPositions" type="Node3D" parent="NavigationRegion3D"]
+
+[node name="MG_FallenLog_Center" type="StaticBody3D" parent="NavigationRegion3D/FiringPositions"]
+transform = Transform3D(1.00000, 0, -0.00000, 0, 1, 0, 0.00000, 0, 1.00000, -6, 0, -2)
+script = ExtResource("5")
+kind = 0
+cover_height = 0.75
+
+[node name="MG_Berm_East" type="StaticBody3D" parent="NavigationRegion3D/FiringPositions"]
+transform = Transform3D(0.96593, 0, -0.25882, 0, 1, 0, 0.25882, 0, 0.96593, 10, 0, 0.5)
+script = ExtResource("5")
+kind = 1
+cover_height = 0.7
+
+[node name="MG_FallenLog_West" type="StaticBody3D" parent="NavigationRegion3D/FiringPositions"]
+transform = Transform3D(0.34202, 0, 0.93969, 0, 1, 0, -0.93969, 0, 0.34202, -30, 0, -26)
+script = ExtResource("5")
+kind = 0
+cover_height = 0.8
+
+[node name="Traps" type="Node3D" parent="."]
+
+[node name="PunjiPit1" parent="Traps" instance=ExtResource("7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27, 0, 9)
+
+[node name="PunjiPit2" parent="Traps" instance=ExtResource("7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 0, -6)
+
+[node name="Spawns" type="Node3D" parent="."]
+
+[node name="PlayerSpawn" type="Marker3D" parent="Spawns" groups=["player_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 56)
+
+[node name="EnemySpawn1" type="Marker3D" parent="Spawns" groups=["enemy_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, -0.9, -44)
+
+[node name="EnemySpawn2" type="Marker3D" parent="Spawns" groups=["enemy_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.9, -46)
+
+[node name="EnemySpawn3" type="Marker3D" parent="Spawns" groups=["enemy_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.9, -46)
+
+[node name="EnemySpawn4" type="Marker3D" parent="Spawns" groups=["enemy_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -0.9, -44)
+
+[node name="EnemySpawn5" type="Marker3D" parent="Spawns" groups=["enemy_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, -0.9, -51)
+
+[node name="EnemySpawn6" type="Marker3D" parent="Spawns" groups=["enemy_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, -0.9, -51)
+
+[node name="EnemySpawn7" type="Marker3D" parent="Spawns" groups=["enemy_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0.3, -32)
+
+[node name="EnemySpawn8" type="Marker3D" parent="Spawns" groups=["enemy_spawn"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0.3, -32)
+
+[node name="Player" parent="." instance=ExtResource("8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 56)
