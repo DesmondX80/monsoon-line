@@ -1,7 +1,7 @@
 # Godot 4
 .godot/
-export_presets.cfg
 export/
+build/
 *.tmp
 
 # OS

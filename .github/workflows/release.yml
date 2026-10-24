@@ -1,0 +1,61 @@
+name: Release
+
+# Rakentaa Windows-.exe:n, kun pushataan versiotagi (esim. v0.1.0),
+# ja liittää sen GitHub-julkaisuun.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows-exe:
+    runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: 4.4.1
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot and export templates
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-templates
+
+      - name: Install Godot and export templates
+        run: |
+          mkdir -p ~/godot
+          if [ ! -f ~/godot/godot ]; then
+            wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+            unzip -q Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+            mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          fi
+          TPL=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          if [ ! -f "$TPL/windows_release_x86_64.exe" ]; then
+            wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+            mkdir -p "$TPL"
+            unzip -q Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+            mv templates/* "$TPL"/
+          fi
+
+      - name: Export Windows build
+        run: |
+          mkdir -p build/windows
+          ~/godot/godot --headless --import --quit || true
+          ~/godot/godot --headless --export-release "Windows Desktop" build/windows/MonsoonLine.exe
+          cd build/windows && zip -q ../MonsoonLine-windows-${GITHUB_REF_NAME}.zip *
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MonsoonLine-windows
+          path: build/MonsoonLine-windows-*.zip
+
+      - name: Attach to GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/MonsoonLine-windows-*.zip
