@@ -9,7 +9,8 @@ signal limb_disabled(body_part: StringName)
 ## Kuinka paljon terveyttä menetetään sekunnissa per vuotava haava.
 @export var bleed_rate: float = 1.5
 
-var health: float
+## Alustetaan heti, jotta komponentti on käyttökelpoinen myös ennen _readyä (esim. testeissä).
+var health: float = max_health
 var bleeding_wounds: int = 0
 var disabled_parts: Array[StringName] = []
 
@@ -31,6 +32,9 @@ func _process(delta: float) -> void:
 
 
 func take_hit(damage: float, body_part: StringName) -> void:
+	# Kuollutta toimijaa ei voi enää haavoittaa: ei uusia haavoja eikä signaaleja.
+	if is_dead():
+		return
 	_apply(damage * DAMAGE_MULTIPLIER.get(body_part, 1.0))
 	bleeding_wounds += 1
 	if body_part != &"torso" and body_part != &"head" and body_part not in disabled_parts:
@@ -39,11 +43,17 @@ func take_hit(damage: float, body_part: StringName) -> void:
 	EventBus.actor_hit.emit(owner, damage, body_part)
 
 
+func is_dead() -> bool:
+	return health <= 0.0
+
+
 func bandage() -> void:
 	bleeding_wounds = maxi(bleeding_wounds - 1, 0)
 
 
 func _apply(amount: float) -> void:
+	if is_dead():
+		return
 	health = maxf(health - amount, 0.0)
 	if health == 0.0:
 		died.emit()

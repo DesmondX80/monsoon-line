@@ -1,29 +1,53 @@
 class_name MachineGun
 extends Node3D
-## Konekiväärin logiikka: nauha, piipun kuumeneminen, piipunvaihto, kaksijalka ja jumitus.
-## Ampuminen delegoidaan Ballistics-järjestelmälle.
+## Konekiväärin logiikka: nauha, piipun kuumeneminen, piipunvaihto, kaksijalka, jumitus,
+## rekyyli ja huojunta (WeaponHandling). Ampuminen delegoidaan Ballistics-järjestelmälle.
+## Kaikki säätöarvot tulevat WeaponData-resurssista.
 
 signal fired
 signal reloaded
 signal barrel_changed
+signal bipod_changed(deployed: bool)
+
+## Lämpö, jonka yläpuolella ase voi jumittua.
+const JAM_HEAT_THRESHOLD := 0.7
 
 @export var data: WeaponData
 @export var muzzle: Marker3D
 
-var rounds_in_belt: int
+var rounds_in_belt: int = 0
 var heat: float = 0.0
-var bipod_deployed: bool = false
+var bipod_deployed: bool = false:
+	set(value):
+		if bipod_deployed != value:
+			bipod_deployed = value
+			bipod_changed.emit(value)
 var jammed: bool = false
 var busy: bool = false  ## lataus tai piipunvaihto käynnissä
+## Rekyyli ja huojunta. Luodaan _readyssä datan perusteella.
+var handling: WeaponHandling
+## Satunnaisuus hajonnalle ja jumitukselle. Testit voivat asettaa siemenen.
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 var _cooldown: float = 0.0
 
 
 func _ready() -> void:
+	rng.randomize()
+	if data == null:
+		push_error("MachineGun ilman WeaponDataa: %s" % get_path())
+		set_process(false)
+		return
 	rounds_in_belt = data.magazine_size
+	handling = WeaponHandling.new(data)
 
 
 func _process(delta: float) -> void:
+	tick(delta)
+
+
+## Ajan kulku: tulinopeuden viive ja piipun jäähtyminen. Erillään _processista testattavuuden vuoksi.
+func tick(delta: float) -> void:
 	_cooldown = maxf(_cooldown - delta, 0.0)
 	heat = maxf(heat - data.cooling_per_second * delta, 0.0)
 
@@ -32,9 +56,10 @@ func can_fire() -> bool:
 	return not busy and not jammed and rounds_in_belt > 0 and _cooldown == 0.0 and heat < 1.0
 
 
+## Yrittää ampua yhden laukauksen. Palauttaa true, jos laukaus lähti.
 func try_fire(shooter: Node3D) -> bool:
 	if not can_fire():
-		if rounds_in_belt == 0:
+		if rounds_in_belt == 0 and not busy:
 			EventBus.belt_empty.emit(self)
 		return false
 	_cooldown = 60.0 / data.rounds_per_minute
@@ -42,10 +67,13 @@ func try_fire(shooter: Node3D) -> bool:
 	heat = minf(heat + data.heat_per_shot, 1.0)
 	if heat >= 1.0:
 		EventBus.barrel_overheated.emit(self)
-	if heat > 0.7 and randf() < data.jam_chance_when_hot:
+	if heat > JAM_HEAT_THRESHOLD and rng.randf() < data.jam_chance_when_hot:
 		jammed = true
 	var direction := _spread_direction()
-	Ballistics.fire(shooter, muzzle.global_position, direction, data)
+	if handling:
+		handling.add_shot(bipod_deployed)
+	if muzzle != null and shooter != null and shooter.is_inside_tree():
+		Ballistics.fire(shooter, muzzle.global_position, direction, data)
 	fired.emit()
 	return true
 
@@ -55,6 +83,29 @@ func current_spread_deg() -> float:
 	if bipod_deployed:
 		spread *= data.supported_spread_multiplier
 	return spread
+
+
+## Yrittää laskea kaksijalan. Makuulla aina, muuten vain, jos piipun edessä on tuki.
+## Palauttaa true, jos kaksijalka on laskettuna kutsun jälkeen.
+func deploy_bipod(prone: bool, has_rest: bool) -> bool:
+	if BipodSupport.can_deploy(data.has_bipod, prone, has_rest):
+		bipod_deployed = true
+	return bipod_deployed
+
+
+func retract_bipod() -> void:
+	bipod_deployed = false
+
+
+## Päivittää rekyylin palautuksen ja huojunnan. stamina ja suppression 0–1.
+func update_handling(delta: float, stamina: float, suppression: float) -> void:
+	if handling:
+		handling.update(delta, stamina, suppression, bipod_deployed)
+
+
+## Rekyylin ja huojunnan yhteinen kulmapoikkeama asteina (x = pysty, y = sivu).
+func get_aim_offset() -> Vector2:
+	return handling.get_offset() if handling else Vector2.ZERO
 
 
 func reload() -> void:
@@ -84,8 +135,13 @@ func clear_jam() -> void:
 
 
 func _spread_direction() -> Vector3:
-	var forward := -muzzle.global_transform.basis.z
+	var basis := transform.basis
+	if muzzle != null and muzzle.is_inside_tree():
+		basis = muzzle.global_transform.basis
+	elif is_inside_tree():
+		basis = global_transform.basis
+	var forward := -basis.z
 	var spread := deg_to_rad(current_spread_deg())
-	var yaw := randf_range(-spread, spread) * 0.5
-	var pitch := randf_range(-spread, spread) * 0.5
-	return forward.rotated(muzzle.global_transform.basis.y, yaw).rotated(muzzle.global_transform.basis.x, pitch).normalized()
+	var yaw := rng.randf_range(-spread, spread) * 0.5
+	var pitch := rng.randf_range(-spread, spread) * 0.5
+	return forward.rotated(basis.y.normalized(), yaw).rotated(basis.x.normalized(), pitch).normalized()
