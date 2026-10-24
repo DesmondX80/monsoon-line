@@ -5,18 +5,38 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  GODOT_VERSION: 4.4.1
+
 jobs:
-  import-check:
+  test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+
+      - name: Cache Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-linux-x86_64
+
       - name: Install Godot (headless)
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
-          GODOT_VERSION=4.4.1
+          mkdir -p ~/godot
+          cd ~/godot
           wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
           unzip -q Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
           mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
-      - name: Import project and check scripts
-        run: ./godot --headless --import --quit
-      # TODO(tester): lisää GUT-testien ajo, kun addons/gut on repossa:
-      # ./godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
+          rm Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          chmod +x godot
+
+      - name: Import project
+        run: ~/godot/godot --headless --path . --import --quit
+
+      # GUT palauttaa nollasta poikkeavan paluukoodin, jos yksikin testi epäonnistuu,
+      # jolloin tämä vaihe ja koko CI epäonnistuvat.
+      - name: Run GUT tests
+        run: ~/godot/godot --headless --path . -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json
