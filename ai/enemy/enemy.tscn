@@ -1,0 +1,212 @@
+[gd_scene load_steps=26 format=3]
+
+[ext_resource type="Script" path="res://ai/enemy/enemy_controller.gd" id="1"]
+[ext_resource type="Resource" path="res://weapons/resources/type56.tres" id="2"]
+[ext_resource type="Script" path="res://core/components/health_component.gd" id="3"]
+[ext_resource type="Script" path="res://core/components/suppression_component.gd" id="4"]
+[ext_resource type="Script" path="res://core/components/hitbox.gd" id="5"]
+[ext_resource type="Script" path="res://ai/enemy/perception.gd" id="6"]
+[ext_resource type="Script" path="res://core/state_machine/state_machine.gd" id="7"]
+[ext_resource type="Script" path="res://ai/enemy/states/patrol_state.gd" id="8"]
+[ext_resource type="Script" path="res://ai/enemy/states/suspicious_state.gd" id="9"]
+[ext_resource type="Script" path="res://ai/enemy/states/combat_state.gd" id="10"]
+[ext_resource type="Script" path="res://ai/enemy/states/suppressed_state.gd" id="11"]
+[ext_resource type="Script" path="res://ai/enemy/states/dead_state.gd" id="12"]
+
+[sub_resource type="CapsuleShape3D" id="capsule"]
+radius = 0.14
+height = 1.5
+
+[sub_resource type="StandardMaterial3D" id="cloth"]
+albedo_color = Color(0.12, 0.12, 0.13, 1)
+
+[sub_resource type="StandardMaterial3D" id="skin"]
+albedo_color = Color(0.62, 0.48, 0.36, 1)
+
+[sub_resource type="StandardMaterial3D" id="metal"]
+albedo_color = Color(0.2, 0.17, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="torso_mesh"]
+material = SubResource("cloth")
+size = Vector3(0.42, 0.6, 0.24)
+
+[sub_resource type="SphereMesh" id="head_mesh"]
+material = SubResource("skin")
+radius = 0.12
+height = 0.24
+
+[sub_resource type="BoxMesh" id="limb_mesh"]
+material = SubResource("cloth")
+size = Vector3(0.13, 0.75, 0.13)
+
+[sub_resource type="BoxMesh" id="rifle_mesh"]
+material = SubResource("metal")
+size = Vector3(0.06, 0.1, 0.88)
+
+[sub_resource type="BoxShape3D" id="torso_shape"]
+size = Vector3(0.46, 0.62, 0.34)
+
+[sub_resource type="SphereShape3D" id="head_shape"]
+radius = 0.14
+
+[sub_resource type="BoxShape3D" id="arm_shape"]
+size = Vector3(0.15, 0.62, 0.17)
+
+[sub_resource type="BoxShape3D" id="leg_shape"]
+size = Vector3(0.17, 0.8, 0.24)
+
+[sub_resource type="CylinderMesh" id="hat_mesh"]
+material = SubResource("cloth")
+top_radius = 0.06
+bottom_radius = 0.2
+height = 0.08
+
+[node name="Enemy" type="CharacterBody3D" groups=["enemy", "suppressible"]]
+collision_layer = 8
+collision_mask = 15
+script = ExtResource("1")
+weapon_data = ExtResource("2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("capsule")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3")
+
+[node name="SuppressionComponent" type="Node" parent="."]
+script = ExtResource("4")
+recovery_per_second = 0.12
+
+[node name="Body" type="Node3D" parent="."]
+
+[node name="Torso" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+mesh = SubResource("torso_mesh")
+
+[node name="TorsoHitbox" type="Area3D" parent="Body/Torso" node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+body_part = &"torso"
+health = NodePath("../../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body/Torso/TorsoHitbox"]
+shape = SubResource("torso_shape")
+
+[node name="Head" type="Node3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.58, 0)
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Body/Head"]
+mesh = SubResource("head_mesh")
+
+[node name="Hat" type="MeshInstance3D" parent="Body/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("hat_mesh")
+
+[node name="HeadHitbox" type="Area3D" parent="Body/Head" node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+body_part = &"head"
+health = NodePath("../../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body/Head/HeadHitbox"]
+shape = SubResource("head_shape")
+
+[node name="Rifle" type="MeshInstance3D" parent="Body/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.22, -0.35)
+mesh = SubResource("rifle_mesh")
+
+[node name="Muzzle" type="Marker3D" parent="Body/Head/Rifle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+
+[node name="ArmL" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.29, 1.12, 0)
+mesh = SubResource("limb_mesh")
+
+[node name="ArmLHitbox" type="Area3D" parent="Body/ArmL" node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+body_part = &"arm_l"
+health = NodePath("../../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body/ArmL/ArmLHitbox"]
+shape = SubResource("arm_shape")
+
+[node name="ArmR" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.29, 1.12, 0)
+mesh = SubResource("limb_mesh")
+
+[node name="ArmRHitbox" type="Area3D" parent="Body/ArmR" node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+body_part = &"arm_r"
+health = NodePath("../../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body/ArmR/ArmRHitbox"]
+shape = SubResource("arm_shape")
+
+[node name="LegL" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 0.42, 0)
+mesh = SubResource("limb_mesh")
+
+[node name="LegLHitbox" type="Area3D" parent="Body/LegL" node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+body_part = &"leg_l"
+health = NodePath("../../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body/LegL/LegLHitbox"]
+shape = SubResource("leg_shape")
+
+[node name="LegR" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 0.42, 0)
+mesh = SubResource("limb_mesh")
+
+[node name="LegRHitbox" type="Area3D" parent="Body/LegR" node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("5")
+body_part = &"leg_r"
+health = NodePath("../../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body/LegR/LegRHitbox"]
+shape = SubResource("leg_shape")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.6
+target_desired_distance = 0.8
+radius = 0.35
+height = 1.6
+
+[node name="Perception" type="Node" parent="." node_paths=PackedStringArray("eyes")]
+script = ExtResource("6")
+eyes = NodePath("../Body/Head")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("7")
+
+[node name="Patrol" type="Node" parent="StateMachine"]
+script = ExtResource("8")
+
+[node name="Suspicious" type="Node" parent="StateMachine"]
+script = ExtResource("9")
+
+[node name="Combat" type="Node" parent="StateMachine"]
+script = ExtResource("10")
+
+[node name="Suppressed" type="Node" parent="StateMachine"]
+script = ExtResource("11")
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("12")
