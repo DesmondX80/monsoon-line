@@ -14,11 +14,29 @@ extends Resource
 ## Kuinka paljon kasvillisuutta tai seinää luoti läpäisee (cm vastaavaa puuta).
 @export var penetration: float = 20.0
 @export_group("Käsittely")
+## Kameran nousu asteina per laukaus.
 @export var recoil_vertical: float = 1.0
+## Satunnaisen sivuheiton enimmäismäärä asteina per laukaus.
 @export var recoil_horizontal: float = 0.4
+## Kuinka nopeasti rekyyli palautuu (eksponentiaalinen kerroin, 1/s).
+@export var recoil_recovery: float = 6.0
+## Aika viimeisestä laukauksesta ennen kuin rekyyli alkaa palautua (s).
+@export var recoil_recovery_delay: float = 0.15
+## Huojunnan perusamplitudi asteina (levännyt, tukahduttamaton, tukematon ampuja).
 @export var sway: float = 1.0
+## Huojunnan perustaajuus hertseinä. Väsymys nopeuttaa sitä.
+@export var sway_frequency: float = 0.5
+## Kuinka paljon tyhjä kestävyys kasvattaa huojuntaa (0 = ei vaikutusta, 2 = kolminkertainen).
+@export var stamina_sway_factor: float = 1.5
+## Kuinka paljon täysi tukahdutus kasvattaa huojuntaa (3 = nelinkertainen).
+@export var suppression_sway_factor: float = 3.0
 @export var hip_spread_deg: float = 4.0
+## Hajonnan kerroin kaksijalalta tai tuettuna.
 @export var supported_spread_multiplier: float = 0.25
+## Rekyylin kerroin kaksijalalta tai tuettuna.
+@export var supported_recoil_multiplier: float = 0.3
+## Huojunnan kerroin kaksijalalta tai tuettuna.
+@export var supported_sway_multiplier: float = 0.15
 @export_group("Konekivääri")
 @export var uses_belt: bool = false
 @export var has_bipod: bool = false

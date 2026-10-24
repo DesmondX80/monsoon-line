@@ -1,19 +1,29 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://player/player_controller.gd" id="1"]
 [ext_resource type="Script" path="res://weapons/scenes/machine_gun.gd" id="2"]
 [ext_resource type="Resource" path="res://weapons/resources/m60.tres" id="3"]
 [ext_resource type="Script" path="res://core/components/health_component.gd" id="4"]
 [ext_resource type="Script" path="res://core/components/suppression_component.gd" id="5"]
+[ext_resource type="Script" path="res://core/components/hitbox.gd" id="6"]
 
 [sub_resource type="CapsuleShape3D" id="capsule"]
 radius = 0.35
 height = 1.8
 
+[sub_resource type="SphereShape3D" id="head_shape"]
+radius = 0.13
+
+[sub_resource type="BoxShape3D" id="torso_shape"]
+size = Vector3(0.45, 0.65, 0.3)
+
+[sub_resource type="BoxShape3D" id="leg_shape"]
+size = Vector3(0.18, 0.85, 0.2)
+
 [sub_resource type="BoxMesh" id="gun_mesh"]
 size = Vector3(0.1, 0.12, 1.1)
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" groups=["player", "suppressible"]]
 collision_layer = 2
 script = ExtResource("1")
 
@@ -44,3 +54,50 @@ script = ExtResource("4")
 
 [node name="SuppressionComponent" type="Node" parent="."]
 script = ExtResource("5")
+
+[node name="HeadHitbox" type="Area3D" parent="Head" node_paths=PackedStringArray("health")]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("6")
+body_part = &"head"
+health = NodePath("../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Head/HeadHitbox"]
+shape = SubResource("head_shape")
+
+[node name="TorsoHitbox" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("6")
+body_part = &"torso"
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TorsoHitbox"]
+shape = SubResource("torso_shape")
+
+[node name="LegLHitbox" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 0.43, 0)
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("6")
+body_part = &"leg_l"
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LegLHitbox"]
+shape = SubResource("leg_shape")
+
+[node name="LegRHitbox" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 0.43, 0)
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("6")
+body_part = &"leg_r"
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LegRHitbox"]
+shape = SubResource("leg_shape")
