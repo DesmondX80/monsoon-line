@@ -1,0 +1,225 @@
+{
+  "milestone": "M1 Prototyyppi",
+  "goal": "Harmaa viidakkotaso, jossa konekiväärimies liikkuu, ampuu M60:llä kaksijalalta ja kohtaa tilakoneella toimivia Viet Cong -vihollisia. Testit ajetaan CI:ssä.",
+  "tasks": [
+    {
+      "key": "M1-01",
+      "role": "tester",
+      "priority": "high",
+      "name": "GUT käyttöön ja CI ajamaan testit",
+      "description": "Asenna GUT (Godot 4.4 -yhteensopiva 9.x) kansioon addons/gut, lisää .gutconfig.json (res://tests/, alikansiot mukaan) ja ota lisäosa käyttöön project.godotissa. Päivitä .github/workflows/ci.yml ajamaan testit headless-tilassa.",
+      "acceptance": [
+        "godot --headless -s addons/gut/gut_cmdln.gd ajaa kaikki tests/-alikansioiden testit",
+        "CI epäonnistuu, jos yksikin testi epäonnistuu",
+        "tests/test_suppression.gd siirretty kansioon tests/core/ ja menee läpi"
+      ]
+    },
+    {
+      "key": "M1-02",
+      "role": "gameplay",
+      "priority": "high",
+      "name": "Ohilentotukahdutus luodeista",
+      "description": "bullet.gd tunnistaa jokaisella fysiikka-askeleella ryhmän \"suppressible\" toimijat (ei ampujaa), joiden etäisyys luodin janaan on alle snap_radius, ja kutsuu register_near_miss(distance) kerran per luoti per toimija sekä lähettää EventBus.bullet_snap. Pelaaja lisätään ryhmiin \"player\" ja \"suppressible\".",
+      "acceptance": [
+        "Läheltä ohi mennyt luoti nostaa kohteen tukahdutusta, kaukaa mennyt ei",
+        "Sama luoti ei rekisteröi samaa kohdetta kahdesti",
+        "GUT-testi janan ja pisteen etäisyyslaskennalle"
+      ]
+    },
+    {
+      "key": "M1-03",
+      "role": "gameplay",
+      "priority": "high",
+      "name": "Kaksijalan tuki esteeseen",
+      "description": "Kaksijalan voi laskea makuulla tai kyykyssä/seisten, kun piipun edessä on rintakorkeudella tukeva pinta (lyhyt säde eteen, world-kerros). Liike kumoaa tuen.",
+      "acceptance": [
+        "Kaksijalka alas makuulla aina, kyykyssä vain esteen ääressä",
+        "Tuettuna hajonta ja huojunta pienenevät WeaponDatan mukaan",
+        "Liikkuminen nostaa kaksijalan automaattisesti"
+      ]
+    },
+    {
+      "key": "M1-04",
+      "role": "gameplay",
+      "priority": "high",
+      "name": "Rekyyli ja huojunta",
+      "description": "Jokainen laukaus nostaa kameraa ja heittää sivulle WeaponData.recoil_vertical/horizontal-arvojen mukaan, palautuu pehmeästi. Huojunta skaalautuu sway-arvon, kestävyyden, tukahdutuksen ja kaksijalan mukaan.",
+      "acceptance": [
+        "Lonkalta sarjatuli on hallitsematonta, kaksijalalta hallittua",
+        "Tukahdutettuna huojunta kasvaa selvästi",
+        "Arvot säädettävissä vain .tres-tiedostosta"
+      ]
+    },
+    {
+      "key": "M1-05",
+      "role": "gameplay",
+      "priority": "medium",
+      "name": "Kestävyys ja kantokuorma",
+      "description": "Juoksu kuluttaa kestävyyttä sitä nopeammin, mitä suurempi carried_load_kg. Kestävyys palautuu levossa. Matala kestävyys lisää huojuntaa.",
+      "acceptance": [
+        "25 kg kuormalla juoksua riittää selvästi lyhyemmän aikaa kuin 15 kg:lla",
+        "Kestävyyden loppuessa juoksu ei onnistu",
+        "GUT-testi kulutus- ja palautuslaskennalle"
+      ]
+    },
+    {
+      "key": "M1-06",
+      "role": "gameplay",
+      "priority": "medium",
+      "name": "MachineGun-testit",
+      "description": "GUT-testit kansioon tests/gameplay/: kuumeneminen ja jäähtyminen, can_fire tyhjällä nauhalla / ylikuumana / kiireisenä, lataus täyttää nauhan, hajonta pienempi kaksijalalla.",
+      "acceptance": [
+        "Kaikki MachineGunin julkiset metodit testattu",
+        "Testit menevät läpi CI:ssä"
+      ]
+    },
+    {
+      "key": "M1-07",
+      "role": "ai",
+      "priority": "high",
+      "name": "Viet Cong -kiväärimies ja tilakone",
+      "description": "ai/enemy/enemy.tscn: CharacterBody3D (enemy-kerros), HealthComponent, SuppressionComponent, hitboxit pää/vartalo/kädet/jalat (hitbox-kerros), NavigationAgent3D, piipun Marker3D. Tilat ai/enemy/states/: Partioi, Epäilee, Taistelee (2–4 laukauksen sarjat, epätarkkuus kasvaa etäisyyden ja tukahdutuksen myötä), Tukahdutettu, Kuollut. Ryhmä \"suppressible\".",
+      "acceptance": [
+        "Vihollinen partioi, reagoi laukaukseen, ampuu pelaajaa ja painuu maahan tukahdutettuna",
+        "Osuma päähän tappaa, raajaosuma hidastaa",
+        "Ampuu Ballistics.fire-rajapinnalla"
+      ]
+    },
+    {
+      "key": "M1-08",
+      "role": "ai",
+      "priority": "high",
+      "name": "Havainnointi: näkö ja kuulo",
+      "description": "ai/enemy/perception.gd: näkökeila ja näköyhteyssäde (world-kerros estää, vegetation-kerros heikentää), havaintomittari joka täyttyy nopeammin liikkeestä ja ampumisesta ja hitaammin makuulla. Kuulo EventBus.shot_fired-signaalista. Konekiväärimies on ensisijainen maali.",
+      "acceptance": [
+        "Makuulla kasvillisuudessa oleva pelaaja havaitaan selvästi myöhemmin",
+        "Laukaus kuulokantaman sisällä siirtää vihollisen Epäilee-tilaan",
+        "GUT-testit keilan ja mittarin laskennalle"
+      ]
+    },
+    {
+      "key": "M1-09",
+      "role": "ai",
+      "priority": "medium",
+      "name": "Type 56 -ase ja AI-hiekkalaatikko",
+      "description": "weapons/resources/type56.tres (noin 650 ptr/min, 30 patruunan lipas, noin 715 m/s). ai/test/ai_sandbox.tscn: tasainen testialue, NavigationRegion3D, esteitä ja kaksi vihollista.",
+      "acceptance": [
+        "Hiekkalaatikko käynnistyy headless-tilassa ilman virheitä",
+        "Viholliset liikkuvat navigaatioalueella"
+      ]
+    },
+    {
+      "key": "M1-10",
+      "role": "world",
+      "priority": "high",
+      "name": "VegetationScatter: MultiMesh-kasvillisuus ja LOD",
+      "description": "world/vegetation/: uudelleenkäytettävä Node3D, joka täyttää alueen MultiMeshInstance3D-erillä (ruoho, pensaat, puunrungot ja latvusto) siemennetyllä satunnaisuudella. visibility_range-LOD, aukiot vältetään. Rungoille törmäys (world-kerros), pensaille näköä estävä vegetation-kerros.",
+      "acceptance": [
+        "Sama siemen tuottaa saman metsän",
+        "Tavoite 60 fps keskitason koneella 1080p:llä",
+        "Ruoho ei estä liikettä, rungot estävät"
+      ]
+    },
+    {
+      "key": "M1-11",
+      "role": "world",
+      "priority": "high",
+      "name": "Viidakkotestitaso jungle_test.tscn",
+      "description": "Noin 150 x 150 m: pudotusalue elefanttiheinineen, tiheä viidakko, Viet Congin bunkkerikompleksi (3–4 bunkkeria ampuma-aukoin, juoksuhauta, tunnelin suu), 2–3 konekivääriasemaa (kaatunut puu, maavalli 0,6–0,9 m). NavigationRegion3D, Marker3D:t ryhmissä \"enemy_spawn\" (6–8 kpl) ja \"player_spawn\". Kostea viidakkovalaistus ja sumu.",
+      "acceptance": [
+        "Taso käynnistyy headless-tilassa ilman virheitä",
+        "Konekivääriasemilla kaksijalan tuki toimii",
+        "Spawn-merkit paikallaan"
+      ]
+    },
+    {
+      "key": "M1-12",
+      "role": "world",
+      "priority": "low",
+      "name": "Punji-ansa",
+      "description": "world/traps/punji_pit.tscn: Area3D, joka pelaajan astuessa kutsuu HealthComponent.take_hit(30, leg_l) kerran. Naamioitu, hieman näkyvä. 1–2 kpl tasoon polkujen varteen.",
+      "acceptance": [
+        "Ansa vahingoittaa jalkaa kerran ja aiheuttaa verenvuodon",
+        "Tarkkaavainen pelaaja voi huomata ansan"
+      ]
+    },
+    {
+      "key": "M1-13",
+      "role": "ui-audio",
+      "priority": "high",
+      "name": "Minimaalinen HUD",
+      "description": "ui/hud.tscn: tukahdutusvinjetti (shader), punainen reunavälähdys osumasta, sykkivä reuna verenvuodosta, kuumuusväreily kun MachineGun.heat > 0,6, häivyttyvät vihjeet (Nauha tyhjä – lataa (R), Piippu ylikuumeni – vaihda (B), Ase jumissa). Ei ammuslaskuria.",
+      "acceptance": [
+        "Efektit reagoivat vain pelaajan tilaan",
+        "HUD toimii, vaikka pelaajan solmuja puuttuisi (get_node_or_null)"
+      ]
+    },
+    {
+      "key": "M1-14",
+      "role": "ui-audio",
+      "priority": "medium",
+      "name": "Kehittäjän debug-näkymä (F3)",
+      "description": "Piilotettu näkymä: FPS, terveys, verenvuoto, tukahdutus, kuumuus, nauha, asento, kaksijalka. Avautuu F3:lla.",
+      "acceptance": [
+        "F3 näyttää ja piilottaa näkymän",
+        "Arvot päivittyvät reaaliajassa"
+      ]
+    },
+    {
+      "key": "M1-15",
+      "role": "ui-audio",
+      "priority": "medium",
+      "name": "Ääniväylät ja paikkamerkkiäänet",
+      "description": "default_bus_layout.tres: Master > SFX, Ambience, Voice, UI; SFX-väylän alipäästö tukahdutettuna. AudioDirector tuottaa koodissa paikkamerkkiäänet (laukaus, ohilennon snap, viidakon ambienssi linnunääniä). Eläimet hiljenevät noin 20 s laukausten jälkeen. Laukaukset 3D-äänenä.",
+      "acceptance": [
+        "Ääntä kuuluu ilman äänitiedostoja",
+        "Ambienssi hiljenee laukausten jälkeen ja palaa"
+      ]
+    },
+    {
+      "key": "M1-16",
+      "role": "ui-audio",
+      "priority": "low",
+      "name": "Repliikkijärjestelmä ja Tibbsin repliikit",
+      "description": "audio/lines/: VoiceLine-resurssi (id, puhujan rooli, teksti fi/en, ääni valinnainen) ja katalogi noin 15 repliikillä: ryhmän huudot ja kersantti Roscoe Tibbsin alkuperäiset prologirepliikit. squad_callout näyttää tekstityksen HUDissa.",
+      "acceptance": [
+        "Repliikit dataa, ei koodia",
+        "Tibbsin repliikit alkuperäisiä, eivät lainauksia elokuvista"
+      ]
+    },
+    {
+      "key": "M1-17",
+      "role": "ui-audio",
+      "priority": "low",
+      "name": "Päävalikko",
+      "description": "ui/main_menu.tscn: Monsoon Line, Aloita (jungle_test, muuten test_range), Asetukset (paikkamerkki), Lopeta. 1960-luvun sotilashenkinen ilme.",
+      "acceptance": [
+        "Aloita lataa tason",
+        "Lopeta sulkee pelin"
+      ]
+    },
+    {
+      "key": "M1-18",
+      "role": "tester",
+      "priority": "medium",
+      "name": "Komponenttitestit: terveys, pelitila, tallennus",
+      "description": "tests/core/: HealthComponent (kertoimet, verenvuoto, sidonta, limb_disabled kerran, died), GameState (ylennys ylärajalla, to_dict/from_dict), SaveManager (tallennus ja lataus).",
+      "acceptance": [
+        "Kaikki testit menevät läpi",
+        "Löydetyt bugit raportoitu tiiminvetäjälle, ei korjattu itse"
+      ]
+    },
+    {
+      "key": "M1-19",
+      "role": "lead",
+      "priority": "high",
+      "name": "Integraatio: pelattava prototyyppi",
+      "description": "Kokoa jungle_test-tasoon pelaaja, viholliset spawn-merkeille ja HUD. Aseta päävalikko aloitussceneksi. Pelitestaa ja kirjaa havainnot uusiksi tehtäviksi.",
+      "acceptance": [
+        "Taso pelattavissa alusta loppuun ilman virheitä",
+        "Kaikki M1-tehtävät yhdistetty mainiin, CI vihreä"
+      ],
+      "depends_on": ["M1-01", "M1-02", "M1-03", "M1-04", "M1-07", "M1-08", "M1-10", "M1-11", "M1-13"]
+    }
+  ]
+}
