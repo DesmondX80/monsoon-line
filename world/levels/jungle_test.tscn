@@ -1,5 +1,6 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
+[ext_resource type="Script" path="res://missions/prototype_mission.gd" id="mission"]
 [ext_resource type="Script" path="res://world/levels/jungle_test.gd" id="1"]
 [ext_resource type="Script" path="res://world/terrain/jungle_terrain.gd" id="2"]
 [ext_resource type="Script" path="res://world/vegetation/vegetation_scatter.gd" id="3"]
@@ -187,3 +188,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0.3, -32)
 
 [node name="Player" parent="." instance=ExtResource("8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 56)
+
+[node name="PrototypeMission" type="Node" parent="."]
+script = ExtResource("mission")

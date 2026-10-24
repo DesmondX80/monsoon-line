@@ -7,20 +7,32 @@ laskuvarjojääkäri ja M60-konekiväärimies Operaatio Junction Cityssä, Vietn
 - **Alusta:** PC (Windows, Linux)
 - **Suunnitteludokumentti:** [docs/GDD.md](docs/GDD.md) (täysi versio Claude Docsissa)
 
-## Ajaminen
+## Pelaaminen (Windows)
 
-1. Asenna Godot 4.4 tai uudempi.
+Lataa uusin `MonsoonLine-windows-*.zip` [Releases](../../releases)-sivulta, pura ja käynnistä `MonsoonLine.exe`.
+
+## Ajaminen editorista
+
+1. Asenna Godot 4.4.
 2. Avaa `project.godot`.
-3. Aja (F5). Aloitusscene on ampumarata `world/levels/test_range.tscn`.
+3. Aja (F5). Peli alkaa päävalikosta; Aloita lataa viidakkotestitason.
+
+## Testit
+
+```
+godot --headless --import --quit
+godot --headless -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json
+```
 
 | Toiminto | Näppäin |
 | --- | --- |
 | Liiku | WASD, Shift juoksu |
 | Kyykky / makuu | C / Z |
 | Ammu / tähtää | Hiiren vasen / oikea |
-| Kaksijalka (makuulla) | V |
+| Kaksijalka (makuulla tai esteeseen tuettuna) | V |
 | Lataa nauha | R |
 | Vaihda piippu | B |
+| Debug-näkymä | F3 |
 
 ## Rakenne
 

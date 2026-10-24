@@ -7,7 +7,8 @@ config_version=5
 
 config/name="Monsoon Line"
 config/description="Taktinen yksinpelattava FPS. Operaatio Junction City, Vietnam 1967."
-run/main_scene="res://world/levels/test_range.tscn"
+run/main_scene="res://ui/main_menu.tscn"
+config/version="0.1.0"
 config/features=PackedStringArray("4.4", "Forward Plus")
 
 [autoload]
