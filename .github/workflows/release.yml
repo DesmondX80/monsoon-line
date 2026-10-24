@@ -1,11 +1,19 @@
 name: Release
 
-# Rakentaa Windows-.exe:n, kun pushataan versiotagi (esim. v0.1.0),
-# ja liittää sen GitHub-julkaisuun.
+# Rakentaa Windows-.exe:n ja liittää sen GitHub-julkaisuun, kun
+# - julkaisu julkaistaan GitHubin verkkosivulla (Releases → Draft a new release), tai
+# - pushataan versiotagi (esim. v0.1.0) ilman julkaisua.
 on:
+  release:
+    types: [published]
   push:
     tags: ["v*"]
   workflow_dispatch:
+
+# Sama tagi ajetaan vain kerran, vaikka sekä tagin push että julkaisu laukaisisivat työnkulun.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
