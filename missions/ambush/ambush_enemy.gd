@@ -1,10 +1,10 @@
 class_name AmbushEnemy
 extends Node3D
-## Väijytyksen yksinkertainen, osuttava vihollisplaceholder (M3).
+## Väijytyksen yksinkertainen, osuttava ja ampumiskykyinen vihollisplaceholder (M3).
 ##
-## Vihollisella on AmbushHitbox, kapselimainen visuaaliedustaja ja suora liike
-## pelaajaa kohti. Hitbox on ballistiikan vaatimalla hitbox-layerillä (5), jotta
-## Bullet osuu siihen ja kutsuu receive_hit-metodia.
+## Vihollinen liikkuu pelaajaa kohti, lähettää shot_fired-signaalin ja voi osua
+## pelaajan HealthComponentiin. Osuma lasketaan todennäköisyydellä; tämä on
+## tarkoituksella kevyt vertical slice -malli ennen oikeaa luoti- ja näköestefysiikkaa.
 
 signal enemy_died(enemy: AmbushEnemy)
 
@@ -19,6 +19,9 @@ const HITBOX_COLLISION_LAYER := 1 << 4
 @export var fire_range: float = 25.0
 @export var stop_distance: float = 8.0
 @export var hitbox_radius: float = 0.55
+@export var damage: float = 8.0
+## Todennäköisyys, että yksi laukaus osuu pelaajaan.
+@export var hit_chance: float = 0.2
 @export var fire_line: StringName = &"enemy_fire"
 
 var health: float = 0.0
@@ -59,7 +62,7 @@ func _move_toward_player(delta: float) -> void:
 	look_at(Vector3(player.global_position.x, global_position.y, player.global_position.z), Vector3.UP)
 
 
-## Lähettää ampumisrepliikin, jos pelaaja on kantamalla.
+## Ampuu pelaajaa kohti: lähettää shot_firedin ja voi osua HealthComponentiin.
 func _try_fire(delta: float) -> void:
 	_fire_timer -= delta
 	if _fire_timer > 0.0:
@@ -68,8 +71,25 @@ func _try_fire(delta: float) -> void:
 	var player := get_tree().get_first_node_in_group(&"player") as Node3D
 	if player == null:
 		return
-	if global_position.distance_to(player.global_position) <= fire_range:
-		EventBus.squad_callout.emit(self, fire_line)
+	var to_player: Vector3 = player.global_position - global_position
+	if to_player.length() > fire_range:
+		return
+	var direction: Vector3 = to_player.normalized()
+	var muzzle: Vector3 = global_position + Vector3.UP * 1.4
+	EventBus.shot_fired.emit(self, muzzle, direction)
+	if randf() <= hit_chance:
+		_apply_hit_to_player(player)
+
+
+## Etsii pelaajan HealthComponentin ja välittää osuman sille.
+func _apply_hit_to_player(player: Node3D) -> void:
+	var health_components: Array[Node] = player.find_children("*", "HealthComponent", true, false)
+	if health_components.is_empty():
+		push_warning("AmbushEnemy: pelaajalta ei löytynyt HealthComponentia.")
+		return
+	var health := health_components[0] as HealthComponent
+	if health != null:
+		health.take_hit(damage, &"torso")
 
 
 ## Vähentää vihollisen terveyttä ja lähettää kuolin-signaalin, jos se kuolee.
