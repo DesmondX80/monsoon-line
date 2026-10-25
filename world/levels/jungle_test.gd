@@ -11,7 +11,11 @@ extends Node3D
 
 signal navigation_ready
 
+const AMBUSH_DIRECTOR := preload("res://missions/ambush/ambush_director.gd")
+
 @onready var navigation_region: NavigationRegion3D = $NavigationRegion3D
+
+var ambush_director: AmbushDirector
 
 
 func _ready() -> void:
@@ -37,3 +41,13 @@ func _bake_navigation() -> void:
 
 func _on_bake_finished() -> void:
 	navigation_ready.emit()
+	_start_ambush()
+
+
+## Käynnistää M3-väijytystehtävän, kun navigointiverkko on valmis.
+func _start_ambush() -> void:
+	if ambush_director != null:
+		return
+	ambush_director = AMBUSH_DIRECTOR.new() as AmbushDirector
+	add_child(ambush_director)
+	ambush_director.start()

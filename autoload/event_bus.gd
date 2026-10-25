@@ -31,3 +31,15 @@ signal jump_started(jumper: Node3D)
 signal chute_opened(jumper: Node3D)
 ## Laskeutuminen: quality = &"good", &"hard" tai &"injured".
 signal landed(jumper: Node3D, quality: StringName)
+
+# --- Kampanja ja väijytys (M3) ---
+## Tehtävän päävaihe vaihtui. stage: patrol, contact, firefight, regroup, extraction, complete.
+signal mission_stage_changed(stage: StringName)
+## Väijytys alkoi: viholliset ovat ottaneet yhteyden ryhmään.
+signal ambush_started()
+## Kaikki väijytyksen viholliset on torjuttu tai ne ovat vetäytyneet.
+signal ambush_cleared()
+## Ryhmä on aloittanut perääntymisen kohtaamisalueelta.
+signal extraction_started()
+## Tehtävä päättyi. result sisältää ainakin avaimen "success".
+signal mission_completed(result: Dictionary)
