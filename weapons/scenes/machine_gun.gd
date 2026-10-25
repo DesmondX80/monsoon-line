@@ -144,6 +144,7 @@ func clear_jam() -> void:
 
 
 ## Lataa ulkoisen M60-mallin, jos se on lisätty projektiin.
+## Godot tuo FBX-tiedostot yleensä PackedScene-resurssina, joten ne on instansioitava.
 func _load_external_model() -> void:
 	if not external_model_enabled or external_model_path.is_empty():
 		return
@@ -154,15 +155,25 @@ func _load_external_model() -> void:
 	if resource == null:
 		push_warning("MachineGun: mallia ei voitu ladata polusta %s." % external_model_path)
 		return
-	var model := resource as Node3D
+	var model := _instantiate_model(resource)
 	if model == null:
-		push_warning("MachineGun: malli ei ole Node3D: %s." % external_model_path)
+		push_warning("MachineGun: malli ei ole Node3D eikä PackedScene: %s." % external_model_path)
 		return
 	model.name = &"ExternalM60Model"
 	model.scale = external_model_scale
 	model.rotation_degrees = external_model_rotation_degrees
 	model.position = external_model_position
 	add_child(model)
+
+
+## Luo Node3D:n joko suoraan Node3D-resurssista tai PackedScene-instanssista.
+func _instantiate_model(resource: Resource) -> Node3D:
+	if resource is Node3D:
+		return resource as Node3D
+	if resource is PackedScene:
+		var scene := resource as PackedScene
+		return scene.instantiate() as Node3D
+	return null
 
 
 func _spread_direction() -> Vector3:
