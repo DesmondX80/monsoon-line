@@ -14,6 +14,14 @@ const JAM_HEAT_THRESHOLD := 0.7
 
 @export var data: WeaponData
 @export var muzzle: Marker3D
+@export_group("Ulkoinen malli")
+## Polku FBX/GLTF-malliin. Jos tiedosto puuttuu, mallia ei ladata.
+@export var external_model_path: String = "res://weapons/models/m60/m60.fbx"
+## false = ulkoista mallia ei ladata edes jos tiedosto löytyy.
+@export var external_model_enabled: bool = true
+@export var external_model_scale: Vector3 = Vector3.ONE
+@export var external_model_rotation_degrees: Vector3 = Vector3.ZERO
+@export var external_model_position: Vector3 = Vector3.ZERO
 
 var rounds_in_belt: int = 0
 var heat: float = 0.0
@@ -40,6 +48,7 @@ func _ready() -> void:
 		return
 	rounds_in_belt = data.magazine_size
 	handling = WeaponHandling.new(data)
+	_load_external_model()
 
 
 func _process(delta: float) -> void:
@@ -132,6 +141,28 @@ func change_barrel(assisted: bool) -> void:
 
 func clear_jam() -> void:
 	jammed = false
+
+
+## Lataa ulkoisen M60-mallin, jos se on lisätty projektiin.
+func _load_external_model() -> void:
+	if not external_model_enabled or external_model_path.is_empty():
+		return
+	if not ResourceLoader.exists(external_model_path):
+		push_warning("MachineGun: ulkoista mallia ei löytynyt polusta %s." % external_model_path)
+		return
+	var resource := load(external_model_path)
+	if resource == null:
+		push_warning("MachineGun: mallia ei voitu ladata polusta %s." % external_model_path)
+		return
+	var model := resource as Node3D
+	if model == null:
+		push_warning("MachineGun: malli ei ole Node3D: %s." % external_model_path)
+		return
+	model.name = &"ExternalM60Model"
+	model.scale = external_model_scale
+	model.rotation_degrees = external_model_rotation_degrees
+	model.position = external_model_position
+	add_child(model)
 
 
 func _spread_direction() -> Vector3:
