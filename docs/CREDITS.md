@@ -1,9 +1,9 @@
 # Credits
 
-## M60 Machine gun – 1963
+## M60 | Free game-ready
 
-- **Model:** Andy Woodhead
-- **Source:** https://sketchfab.com/3d-models/m60-machine-gun-1963-free-093e93399528434e9735539e25e51f8d
+- **Model:** Matej Ondra
+- **Source:** https://sketchfab.com/3d-models/m60-free-game-ready-3bd29c932abf42078d0f757d9553cadf
 - **License:** CC BY 4.0
 - **Changes:** Imported into Godot, scaled and oriented for first-person use.
 
