@@ -157,7 +157,7 @@ func _load_external_model() -> void:
 		return
 	var model := _instantiate_model(resource)
 	if model == null:
-		push_warning("MachineGun: malli ei ole Node3D eikä PackedScene: %s." % external_model_path)
+		push_warning("MachineGun: mallia ei voitu muuntaa Node3D:ksi: %s." % external_model_path)
 		return
 	model.name = &"ExternalM60Model"
 	model.scale = external_model_scale
@@ -168,10 +168,11 @@ func _load_external_model() -> void:
 
 ## Luo Node3D:n joko suoraan Node3D-resurssista tai PackedScene-instanssista.
 func _instantiate_model(resource: Resource) -> Node3D:
-	if resource is Node3D:
-		return resource as Node3D
-	if resource is PackedScene:
-		var scene := resource as PackedScene
+	var direct_model := resource as Node3D
+	if direct_model != null:
+		return direct_model
+	var scene := resource as PackedScene
+	if scene != null:
 		return scene.instantiate() as Node3D
 	return null
 
