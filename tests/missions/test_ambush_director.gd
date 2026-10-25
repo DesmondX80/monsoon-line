@@ -1,4 +1,4 @@
-extends GUTUnitTest
+extends GutTest
 ## GUT-testit AmbushDirectorin vaihekoneelle (M3).
 
 var director: AmbushDirector

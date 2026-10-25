@@ -13,8 +13,6 @@ signal stage_changed(stage: Stage)
 
 enum Stage { NONE, PATROL, CONTACT, FIREFIGHT, REGROUP, EXTRACTION, COMPLETE }
 
-const ENEMY_SCRIPT := preload("res://missions/ambush/ambush_enemy.gd")
-
 @export var patrol_duration: float = 12.0
 @export var contact_duration: float = 2.0
 @export var regroup_duration: float = 6.0
@@ -114,10 +112,10 @@ func _spawn_enemies() -> void:
 		var enemy := AmbushEnemy.new()
 		enemy.max_health = enemy_health
 		enemy.fire_interval = enemy_fire_interval
+		add_child(enemy)
 		var angle: float = TAU * float(index) / float(enemy_count)
 		var offset: Vector3 = Vector3(cos(angle), 0.0, sin(angle)) * ambush_radius
 		enemy.global_position = player.global_position + offset
-		add_child(enemy)
 		enemies.append(enemy)
 
 
