@@ -2,15 +2,16 @@ class_name AmbushEnemy
 extends Node3D
 ## Väijytyksen yksinkertainen, osuttava vihollisplaceholder (M3).
 ##
-## Vihollisella on Area3D-hitbox, kapselimainen visuaaliedustaja ja suora
-## liike pelaajaa kohti. Se kuuntelee EventBusin actor_hit-signaalia ja kuolee,
-## kun terveys loppuu. Tämä on tarkoituksella kevyt versio: oikea AI, animaatiot
-## ja kattava ballistiikka tulevat myöhemmin.
+## Vihollisella on AmbushHitbox, kapselimainen visuaaliedustaja ja suora liike
+## pelaajaa kohti. Hitbox on ballistiikan vaatimalla hitbox-layerillä (5), jotta
+## Bullet osuu siihen ja kutsuu receive_hit-metodia.
 
 signal enemy_died(enemy: AmbushEnemy)
 
 const HITBOX_NAME := &"Hitbox"
 const VISUAL_NAME := &"Visual"
+## Sama layer kuin Ballistics.BULLET_COLLISION_MASKin hitbox-bitti.
+const HITBOX_COLLISION_LAYER := 1 << 4
 
 @export var max_health: float = 3.0
 @export var move_speed: float = 2.5
@@ -24,7 +25,7 @@ var health: float = 0.0
 var alive: bool = true
 
 var _fire_timer: float = 0.0
-var _hitbox: Area3D
+var _hitbox: AmbushHitbox
 var _visual: MeshInstance3D
 
 
@@ -100,10 +101,13 @@ func _build_visual() -> void:
 	add_child(_visual)
 
 
-## Rakentaa Area3D-hitboxin, johon aseiden raycast voi osua.
+## Rakentaa ballistiikan vaatiman Hitbox-osuma-alueen layerille 5.
 func _build_hitbox() -> void:
-	_hitbox = Area3D.new()
+	_hitbox = AmbushHitbox.new()
 	_hitbox.name = HITBOX_NAME
+	_hitbox.enemy = self
+	_hitbox.collision_layer = HITBOX_COLLISION_LAYER
+	_hitbox.collision_mask = 0
 	var shape := CollisionShape3D.new()
 	var sphere := SphereShape3D.new()
 	sphere.radius = hitbox_radius
